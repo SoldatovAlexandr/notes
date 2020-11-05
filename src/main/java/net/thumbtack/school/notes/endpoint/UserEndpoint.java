@@ -1,0 +1,95 @@
+package net.thumbtack.school.notes.endpoint;
+
+import net.thumbtack.school.notes.dto.request.LoginUserRequest;
+import net.thumbtack.school.notes.dto.request.PasswordDtoRequest;
+import net.thumbtack.school.notes.dto.request.RegisterUserDtoRequest;
+import net.thumbtack.school.notes.dto.request.UpdateUserDtoRequest;
+import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
+import net.thumbtack.school.notes.dto.response.ProfileInfoDtoResponse;
+import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
+import net.thumbtack.school.notes.erroritem.exception.ServerException;
+import net.thumbtack.school.notes.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+@RestController
+@Validated
+@RequestMapping("/api")
+public class UserEndpoint {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserEndpoint.class);
+    private final UserService userService;
+    private final String cookieName = "JAVASESSIONID";
+
+    @Autowired
+    public UserEndpoint(UserService userService) {
+        this.userService = userService;
+    }
+
+    @PostMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ProfileInfoDtoResponse registerUser(@Valid @RequestBody RegisterUserDtoRequest registerUserDtoRequest,
+                                               HttpServletResponse httpServletResponse) throws ServerException {
+        LOGGER.info("UserEndpoint register user");
+        return userService.registerUser(registerUserDtoRequest, httpServletResponse);
+    }
+
+    @PostMapping(value = "/sessions", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public EmptyDtoResponse loginUser(@RequestBody LoginUserRequest loginUserRequest,
+                                      HttpServletResponse httpServletResponse) throws ServerException {
+        LOGGER.info("UserEndpoint login user");
+        return userService.loginUser(loginUserRequest, httpServletResponse);
+    }
+
+    @DeleteMapping(value = "/sessions")
+    public EmptyDtoResponse logoutUser(@CookieValue(value = cookieName) String token) {
+        LOGGER.info("UserEndpoint logout user");
+        return userService.logoutUser(token);
+    }
+
+    @GetMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ProfileInfoDtoResponse getProfileInfo(@CookieValue(value = cookieName) String token)
+            throws ServerException {
+        LOGGER.info("UserEndpoint profile info");
+        return userService.getProfileInfo(token);
+    }
+
+    @DeleteMapping(value = "/accounts", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public EmptyDtoResponse removeUser(@RequestBody PasswordDtoRequest passwordDtoRequest,
+                                       @CookieValue(value = cookieName) String token) throws ServerException {
+        LOGGER.info("UserEndpoint remove user");
+        return userService.removeUser(passwordDtoRequest, token);
+    }
+
+    @PutMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public UpdateUserDtoResponse updateUser(@Valid @RequestBody UpdateUserDtoRequest updateUserDtoRequest,
+                                            @CookieValue(value = cookieName) String token) throws ServerException {
+        LOGGER.info("UserEndpoint update user");
+        return userService.updateUser(updateUserDtoRequest, token);
+    }
+
+    @PutMapping(value = "/accounts/{id}/super")
+    public EmptyDtoResponse setSuperUser(@CookieValue(value = cookieName) String token,
+                                         @PathVariable("id") int id) throws ServerException {
+        LOGGER.info("UserEndpoint set user with id {} superuser", id);
+        return userService.setSuperUser(token, id);
+    }
+
+    @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ProfileInfoDtoResponse getUsers(@CookieValue(value = cookieName) String sessionId,
+                                           @RequestParam String sortByRating,
+                                           @RequestParam String type,
+                                           @RequestParam String from,
+                                           @RequestParam String count) {
+        return null;
+    }
+
+}

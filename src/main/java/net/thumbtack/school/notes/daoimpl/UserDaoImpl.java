@@ -4,6 +4,7 @@ import net.thumbtack.school.notes.dao.UserDao;
 import net.thumbtack.school.notes.mappers.UserMapper;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
+import net.thumbtack.school.notes.model.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,13 +73,36 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void setUserIsNotActive(User user) {
         LOGGER.debug("DAO set user : {} is not active", user);
-        userMapper.setUserIsNotActive(user);
+        userMapper.deleteUser(user);
     }
 
     @Override
-    public boolean setSuperUser(int id) {
-        LOGGER.debug("DAO set user super where id is  {}", id);
-        return userMapper.setSuperUser(id);
+    public boolean setUserType(int id, UserType type) {
+        LOGGER.debug("DAO set user with id {} type  {}", id, type);
+        return userMapper.setUserType(id, type);
     }
 
+    @Override
+    public void insertFollowing(int followerId, int followingId) {
+        LOGGER.debug("DAO following user: {} on user: {}", followerId, followingId);
+        userMapper.insertFollowing(followerId, followingId);
+    }
+
+    @Override
+    public void insertIgnore(int ignoreId, int ignoreById) {
+        LOGGER.debug("DAO ignore user: {} on user: {}", ignoreId, ignoreById);
+        userMapper.insertIgnore(ignoreId, ignoreById);
+    }
+
+    @Override
+    public int deleteFollowing(int followerId, int followingId) {
+        LOGGER.debug("DAO delete following with follower: {}, following: {}", followerId, followingId);
+        return userMapper.deleteFollowing(followerId, followingId);
+    }
+
+    @Override
+    public int deleteIgnore(int ignoreId, int ignoreById) {
+        LOGGER.debug("DAO delete ignore with ignore: {}, ignoreBy: {}", ignoreId, ignoreById);
+        return userMapper.deleteIgnore(ignoreId, ignoreById);
+    }
 }

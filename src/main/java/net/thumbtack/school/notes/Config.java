@@ -15,6 +15,8 @@ public class Config {
     private int maxNameLength;
     @Value("${min_password_length}")
     private int minPasswordLength;
+    @Value("${user_idle_timeout}")
+    private int userIdleTimeout;
 
     public int getMaxNameLength() {
         return maxNameLength;
@@ -22,5 +24,9 @@ public class Config {
 
     public int getMinPasswordLength() {
         return minPasswordLength;
+    }
+
+    public int getUserIdleTimeout() {
+        return userIdleTimeout;
     }
 }

@@ -2,6 +2,7 @@ package net.thumbtack.school.notes.dao;
 
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
+import net.thumbtack.school.notes.model.UserType;
 
 public interface UserDao {
 
@@ -23,6 +24,14 @@ public interface UserDao {
 
     void setUserIsNotActive(User user);
 
-    boolean setSuperUser(int id);
+    boolean setUserType(int id, UserType type);
+
+    void insertFollowing(int followerId, int followingId);
+
+    void insertIgnore(int ignoreId, int ignoreById);
+
+    int deleteFollowing(int followerId, int followingId);
+
+    int deleteIgnore(int ignoreId, int ignoreById);
 }
 

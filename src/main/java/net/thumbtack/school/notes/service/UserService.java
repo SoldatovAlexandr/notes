@@ -1,11 +1,11 @@
 package net.thumbtack.school.notes.service;
 
+import net.thumbtack.school.notes.dao.CommentDao;
+import net.thumbtack.school.notes.dao.NoteDao;
+import net.thumbtack.school.notes.dao.SectionDao;
 import net.thumbtack.school.notes.dao.UserDao;
 import net.thumbtack.school.notes.dto.mappers.UserDtoMapper;
-import net.thumbtack.school.notes.dto.request.LoginUserRequest;
-import net.thumbtack.school.notes.dto.request.PasswordDtoRequest;
-import net.thumbtack.school.notes.dto.request.RegisterUserDtoRequest;
-import net.thumbtack.school.notes.dto.request.UpdateUserDtoRequest;
+import net.thumbtack.school.notes.dto.request.*;
 import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
 import net.thumbtack.school.notes.dto.response.ProfileInfoDtoResponse;
 import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
@@ -13,6 +13,7 @@ import net.thumbtack.school.notes.erroritem.code.ServerErrorCodeWithField;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
+import net.thumbtack.school.notes.model.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,15 @@ import java.util.UUID;
 public class UserService extends BaseService {
 
     @Autowired
-    public UserService(UserDao userDao) {
-        super(userDao);
+    public UserService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao) {
+        super(userDao, sectionDao, noteDao, commentDao);
     }
 
     public ProfileInfoDtoResponse registerUser(RegisterUserDtoRequest registerUserDtoRequest,
                                                HttpServletResponse httpServletResponse) throws ServerException {
         User user = UserDtoMapper.INSTANCE.toUser(registerUserDtoRequest);
+
+        user.setType(UserType.USER);
 
         insertUser(user);
 
@@ -118,22 +121,125 @@ public class UserService extends BaseService {
 
         User user = session.getUser();
 
-        if (!user.isActive()) {
+        if (!user.isDeleted()) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
         }
 
-        if (!userDao.setSuperUser(id)) {
+        if (!userDao.setUserType(id, UserType.SUPER_USER)) {
             throw new ServerException(ServerErrorCodeWithField.WRONG_ID);
         }
 
         return new EmptyDtoResponse();
     }
 
+    public EmptyDtoResponse following(FollowingDtoRequest followingDtoRequest, String token) throws ServerException {
+        Session session = getSession(token);
+
+        User follower = session.getUser();
+
+        User following = getUserByLogin(followingDtoRequest.getLogin());
+
+        insertFollowing(follower.getId(), following.getId());
+
+        return new EmptyDtoResponse();
+    }
+
+    public EmptyDtoResponse ignore(IgnoreDtoRequest ignoreDtoRequest, String token) throws ServerException {
+        Session session = getSession(token);
+
+        User ignoreBy = session.getUser();
+
+        User ignore = getUserByLogin(ignoreDtoRequest.getLogin());
+
+        insertIgnore(ignore.getId(), ignoreBy.getId());
+
+        return new EmptyDtoResponse();
+    }
+
+    public EmptyDtoResponse deleteFollowing(String login, String token) throws ServerException {
+        Session session = getSession(token);
+
+        User follower = session.getUser();
+
+        User following = getUserByLogin(login);
+
+        deleteFollowing(follower.getId(), following.getId());
+
+        return new EmptyDtoResponse();
+    }
+
+    public EmptyDtoResponse deleteIgnore(String login, String token) throws ServerException {
+        Session session = getSession(token);
+
+        User ignoreBy = session.getUser();
+
+        User ignore = getUserByLogin(login);
+
+        deleteIgnore(ignore.getId(), ignoreBy.getId());
+
+        return new EmptyDtoResponse();
+    }
+
+    //TODO: сделать этот метод
+    public ProfileInfoDtoResponse getUsers(String sortByRating, String type, Integer from, Integer count, String token) throws ServerException {
+        Session session = getSession(token);
+
+
+
+        return null;
+    }
+
+    private void deleteIgnore(int ignoreId, int ignoreById) throws ServerException {
+        if (userDao.deleteIgnore(ignoreId, ignoreById) == 0) {
+            throw new ServerException(ServerErrorCodeWithField.NOT_IGNORING);
+        }
+    }
+
+    private void deleteFollowing(int followerId, int followingId) throws ServerException {
+        if (userDao.deleteFollowing(followerId, followingId) == 0) {
+            throw new ServerException(ServerErrorCodeWithField.NOT_FOLLOWING);
+        }
+    }
+
+    private void insertIgnore(int ignoreId, int ignoreById) throws ServerException {
+        if (ignoreId == ignoreById) {
+            throw new ServerException(ServerErrorCodeWithField.CAN_NOT_IGNORE);
+        }
+
+        try {
+            userDao.insertIgnore(ignoreId, ignoreById);
+        } catch (DuplicateKeyException e) {
+            throw new ServerException(ServerErrorCodeWithField.IGNORE_ALREADY_EXIST);
+        }
+    }
+
+    private User getUserByLogin(String login) throws ServerException {
+        User user = userDao.getByLogin(login);
+
+        if (user == null) {
+            throw new ServerException(ServerErrorCodeWithField.LOGIN_NOT_EXIST);
+        }
+        return user;
+    }
+
+
     private void insertUser(User user) throws ServerException {
         try {
             userDao.insert(user);
         } catch (DuplicateKeyException e) {
             throw new ServerException(ServerErrorCodeWithField.LOGIN_ALREADY_EXIST);
+        }
+    }
+
+    private void insertFollowing(int followerId, int followingId) throws ServerException {
+        if (followerId == followingId) {
+            throw new ServerException(ServerErrorCodeWithField.CAN_NOT_SUBSCRIBE);
+        }
+
+        try {
+            userDao.insertFollowing(followerId, followingId);
+        } catch (DuplicateKeyException e) {
+            throw new ServerException(ServerErrorCodeWithField.FOLLOWING_ALREADY_EXIST);
         }
     }
 
@@ -163,5 +269,4 @@ public class UserService extends BaseService {
         user.setFirstName(newUser.getFirstName());
         user.setPatronymic(newUser.getPatronymic());
     }
-
 }

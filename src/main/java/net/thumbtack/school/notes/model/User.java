@@ -16,8 +16,8 @@ public class User {
     private String patronymic;
     private String login;
     private String password;
-    private boolean isActive;
-    private boolean isSuperUser;
+    private boolean deleted;
+    private UserType type;
     private List<User> followers;
     private List<User> followings;
 

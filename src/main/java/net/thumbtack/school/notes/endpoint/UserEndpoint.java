@@ -1,9 +1,6 @@
 package net.thumbtack.school.notes.endpoint;
 
-import net.thumbtack.school.notes.dto.request.LoginUserRequest;
-import net.thumbtack.school.notes.dto.request.PasswordDtoRequest;
-import net.thumbtack.school.notes.dto.request.RegisterUserDtoRequest;
-import net.thumbtack.school.notes.dto.request.UpdateUserDtoRequest;
+import net.thumbtack.school.notes.dto.request.*;
 import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
 import net.thumbtack.school.notes.dto.response.ProfileInfoDtoResponse;
 import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
@@ -84,12 +81,43 @@ public class UserEndpoint {
     }
 
     @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProfileInfoDtoResponse getUsers(@CookieValue(value = cookieName) String sessionId,
+    public ProfileInfoDtoResponse getUsers(@CookieValue(value = cookieName) String token,
                                            @RequestParam String sortByRating,
                                            @RequestParam String type,
-                                           @RequestParam String from,
-                                           @RequestParam String count) {
-        return null;
+                                           @RequestParam Integer from,
+                                           @RequestParam Integer count) throws ServerException {
+        return userService.getUsers(sortByRating, type, from, count, token);
     }
 
+    @PostMapping(value = "/followings", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public EmptyDtoResponse addFollowing(@Valid @RequestBody FollowingDtoRequest followingDtoRequest,
+                                         @CookieValue(value = cookieName) String token
+    ) throws ServerException {
+        LOGGER.info("UserEndpoint add following");
+        return userService.following(followingDtoRequest, token);
+    }
+
+    @PostMapping(value = "/ignore", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public EmptyDtoResponse addIgnore(@Valid @RequestBody IgnoreDtoRequest ignoreDtoRequest,
+                                      @CookieValue(value = cookieName) String token
+    ) throws ServerException {
+        LOGGER.info("UserEndpoint add ignore");
+        return userService.ignore(ignoreDtoRequest, token);
+    }
+
+    @DeleteMapping(value = "/followings/{login}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public EmptyDtoResponse deleteFollowing(@CookieValue(value = cookieName) String token,
+                                            @PathVariable("login") String login) throws ServerException {
+        LOGGER.info("UserEndpoint delete following");
+        return userService.deleteFollowing(login, token);
+    }
+
+    @DeleteMapping(value = "/ignore/{login}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public EmptyDtoResponse deleteIgnore(@CookieValue(value = cookieName) String token,
+                                         @PathVariable("login") String login) throws ServerException {
+        LOGGER.info("UserEndpoint delete ignore");
+        return userService.deleteIgnore(login, token);
+    }
 }

@@ -18,7 +18,6 @@ import net.thumbtack.school.notes.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -40,7 +39,7 @@ public class CommentService extends BaseService {
 
         comment.setRevisionId(note.getNoteVersion().getRevisionId());
 
-        comment.setCreated(LocalDate.now());
+        comment.setCreated(getCurrentDateTime());
 
         commentDao.insertComment(comment);
 

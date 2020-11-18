@@ -16,8 +16,6 @@ import net.thumbtack.school.notes.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-
 @Service
 public class NoteService extends BaseService {
     private static final int START_REVISION_ID = 1;
@@ -39,7 +37,7 @@ public class NoteService extends BaseService {
 
         note.setAuthorId(session.getUser().getId());
 
-        note.setCreated(LocalDate.now());
+        note.setCreated(getCurrentDateTime());
 
         note.getNoteVersion().setRevisionId(START_REVISION_ID);
 
@@ -108,15 +106,9 @@ public class NoteService extends BaseService {
             throw new ServerException(ServerErrorCodeWithField.CAN_NOT_RATE);
         }
 
-        Rating rating = noteDao.getRating(userId, noteId);
+        Rating rating = new Rating(userId, noteId, addRatingDtoRequest.getRating());
 
-        if (rating == null) {
-            rating = new Rating(userId, noteId, addRatingDtoRequest.getRating());
-            noteDao.insertRating(rating);
-        } else {
-            rating.setNumber(addRatingDtoRequest.getRating());
-            noteDao.updateRating(rating);
-        }
+        noteDao.insertRating(rating);
 
         return new EmptyDtoResponse();
     }
@@ -148,6 +140,7 @@ public class NoteService extends BaseService {
     }
 
     private void insertNoteVersion(NoteVersion noteVersion, int noteId) {
-        noteDao.insertNoteVersion(noteVersion, noteId);
+        noteVersion.setId(noteId);
+        noteDao.insertNoteVersion(noteVersion);
     }
 }

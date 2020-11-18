@@ -19,11 +19,10 @@ CREATE TABLE user
 
 CREATE TABLE session
 (
-    id          INT(11)     NOT NULL AUTO_INCREMENT,
     user_id     INT(11)     NOT NULL,
     token       VARCHAR(50) NOT NULL,
     last_action DATETIME    NOT NULL,
-    PRIMARY KEY (id),
+    PRIMARY KEY (user_id),
     FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE cascade
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8;

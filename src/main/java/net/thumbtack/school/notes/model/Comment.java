@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +15,7 @@ public class Comment {
     private int noteId;
     private int authorId;
     private int revisionId;
-    private LocalDate created;
+    private LocalDateTime created;
 
     public Comment(String body, int noteId) {
         this.body = body;

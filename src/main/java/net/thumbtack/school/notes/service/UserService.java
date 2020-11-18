@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -89,7 +88,7 @@ public class UserService extends BaseService {
             throw new ServerException(ServerErrorCodeWithField.INCORRECT_PASSWORD);
         }
 
-        userDao.setUserIsNotActive(user);
+        userDao.setDeletedUser(user);
 
         deleteExistingSession(user);
 
@@ -119,15 +118,16 @@ public class UserService extends BaseService {
     public EmptyDtoResponse setSuperUser(String token, int id) throws ServerException {
         Session session = getSession(token);
 
-        User user = session.getUser();
+        User author = session.getUser();
 
-        if (!user.isDeleted()) {
+        //todo
+        if (!author.isDeleted() || author.getType() != UserType.SUPER_USER) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
         }
 
-        if (!userDao.setUserType(id, UserType.SUPER_USER)) {
-            throw new ServerException(ServerErrorCodeWithField.WRONG_ID);
-        }
+        User user = getUserById(id);
+
+        userDao.setUserType(user);
 
         return new EmptyDtoResponse();
     }
@@ -183,7 +183,6 @@ public class UserService extends BaseService {
     //TODO: сделать этот метод
     public ProfileInfoDtoResponse getUsers(String sortByRating, String type, Integer from, Integer count, String token) throws ServerException {
         Session session = getSession(token);
-
 
 
         return null;
@@ -245,8 +244,9 @@ public class UserService extends BaseService {
 
     private void addCookie(User user, HttpServletResponse httpServletResponse) {
         Cookie cookie = createCookie();
-        deleteExistingSession(user);
+
         insertSession(user, cookie);
+
         httpServletResponse.addCookie(cookie);
     }
 
@@ -255,7 +255,9 @@ public class UserService extends BaseService {
     }
 
     private void insertSession(User user, Cookie cookie) {
-        userDao.insertSession(new Session(user, cookie.getValue(), LocalDate.now()));
+        Session session = new Session(user, cookie.getValue(), getCurrentDateTime());
+
+        userDao.insertSession(session);
     }
 
     private void deleteExistingSession(User user) {
@@ -264,9 +266,13 @@ public class UserService extends BaseService {
 
     private void updateUserFields(UpdateUserDtoRequest updateUserDtoRequest, User user) {
         User newUser = UserDtoMapper.INSTANCE.toUser(updateUserDtoRequest);
+
         user.setPassword(newUser.getPassword());
+
         user.setLastName(newUser.getLastName());
+
         user.setFirstName(newUser.getFirstName());
+
         user.setPatronymic(newUser.getPatronymic());
     }
 }

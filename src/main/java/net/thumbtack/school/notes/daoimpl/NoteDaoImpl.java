@@ -28,9 +28,9 @@ public class NoteDaoImpl implements NoteDao {
     }
 
     @Override
-    public void insertNoteVersion(NoteVersion noteVersion, int noteId) {
+    public void insertNoteVersion(NoteVersion noteVersion) {
         LOGGER.debug("DAO insert note version: {}", noteVersion);
-        noteMapper.insertNoteVersion(noteVersion, noteId);
+        noteMapper.insertNoteVersion(noteVersion);
     }
 
     @Override
@@ -63,9 +63,4 @@ public class NoteDaoImpl implements NoteDao {
         return noteMapper.getRating(userId, noteId);
     }
 
-    @Override
-    public void updateRating(Rating rating) {
-        LOGGER.debug("DAO update rating: {}", rating);
-        noteMapper.updateRating(rating);
-    }
 }

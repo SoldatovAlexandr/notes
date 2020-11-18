@@ -4,7 +4,6 @@ import net.thumbtack.school.notes.dao.UserDao;
 import net.thumbtack.school.notes.mappers.UserMapper;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
-import net.thumbtack.school.notes.model.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,15 +70,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void setUserIsNotActive(User user) {
+    public void setDeletedUser(User user) {
         LOGGER.debug("DAO set user : {} is not active", user);
         userMapper.deleteUser(user);
     }
 
     @Override
-    public boolean setUserType(int id, UserType type) {
-        LOGGER.debug("DAO set user with id {} type  {}", id, type);
-        return userMapper.setUserType(id, type);
+    public boolean setUserType(User user) {
+        LOGGER.debug("DAO set user type for user:{}", user);
+        return userMapper.setUserType(user);
     }
 
     @Override

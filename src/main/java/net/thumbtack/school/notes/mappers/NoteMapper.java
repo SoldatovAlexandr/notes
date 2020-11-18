@@ -17,9 +17,9 @@ public interface NoteMapper {
     void insertNote(Note note);
 
     @Insert("INSERT INTO note_version (note_id, revision_id, body) VALUES "
-            + "(#{noteId}, #{noteVersion.revisionId}, #{noteVersion.body})")
+            + "(#{id}, #{revisionId}, #{body})")
     @Options(useGeneratedKeys = true, keyProperty = "noteVersion.id")
-    void insertNoteVersion(@Param("noteVersion") NoteVersion noteVersion, @Param("noteId") int noteId);
+    void insertNoteVersion(NoteVersion noteVersion);
 
     @Select("SELECT id, user_id AS authorId, section_id AS sectionId, subject, created FROM note WHERE id = #{noteId}")
     @Results(
@@ -35,7 +35,7 @@ public interface NoteMapper {
     )
     Note getNoteById(int noteId);
 
-    @Select("SELECT MAX(revision_id) AS revisionId, body FROM note_version WHERE note_id = #{noteId}")
+    @Select("SELECT MAX(revision_id) AS revisionId, body, note_id AS id FROM note_version WHERE note_id = #{noteId}")
     NoteVersion getNoteVersionByNoteId(int noteId);
 
     @Update("UPDATE note SET  section_id = #{sectionId} WHERE id=#{id}")
@@ -47,14 +47,11 @@ public interface NoteMapper {
     @Delete("DELETE FROM note")
     void clear();
 
-    @Insert("INSERT INTO rating (user_id, note_id, number) VALUES "
-            + "(#{authorId}, #{noteId}, #{number})")
+    @Insert("INSERT INTO rating (user_id, note_id, number) VALUES (#{authorId}, #{noteId}, #{number}) "
+            + "ON DUPLICATE KEY UPDATE number=#{number}")
     void insertRating(Rating rating);
 
     @Select("SELECT user_id AS authorId, note_id AS noteId, number FROM rating" +
             " WHERE user_id = #{userId} AND note_id = #{noteId}")
     Rating getRating(@Param("userId") int userId, @Param("noteId") int noteId);
-
-    @Update("UPDATE rating SET number = #{number} WHERE user_id = #{authorId} AND note_id = #{noteId}")
-    void updateRating(Rating rating);
 }

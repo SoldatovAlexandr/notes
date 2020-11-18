@@ -7,7 +7,7 @@ import net.thumbtack.school.notes.model.Rating;
 public interface NoteDao {
     void insertNote(Note note);
 
-    void insertNoteVersion(NoteVersion noteVersion, int noteId);
+    void insertNoteVersion(NoteVersion noteVersion);
 
     Note getNoteById(int noteId);
 
@@ -18,6 +18,4 @@ public interface NoteDao {
     void insertRating(Rating rating);
 
     Rating getRating(int userId, int noteId);
-
-    void updateRating(Rating rating);
 }

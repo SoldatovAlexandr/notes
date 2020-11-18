@@ -6,13 +6,13 @@ import net.thumbtack.school.notes.dao.SectionDao;
 import net.thumbtack.school.notes.dao.UserDao;
 import net.thumbtack.school.notes.erroritem.code.ServerErrorCodeWithField;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
-import net.thumbtack.school.notes.model.Comment;
-import net.thumbtack.school.notes.model.Note;
-import net.thumbtack.school.notes.model.Section;
-import net.thumbtack.school.notes.model.Session;
+import net.thumbtack.school.notes.model.*;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @Transactional(rollbackFor = {NestedRuntimeException.class, ServerException.class})
@@ -69,5 +69,19 @@ public class BaseService {
         }
 
         return comment;
+    }
+
+    protected User getUserById(int id) throws ServerException {
+        User user = userDao.getById(id);
+
+        if (user == null) {
+            throw new ServerException(ServerErrorCodeWithField.WRONG_ID);
+        }
+
+        return user;
+    }
+
+    protected LocalDateTime getCurrentDateTime() {
+        return LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 }

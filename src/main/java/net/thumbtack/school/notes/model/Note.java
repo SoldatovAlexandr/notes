@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -15,7 +15,7 @@ public class Note {
     private String subject;
     private int sectionId;
     private int authorId;
-    private LocalDate created;
+    private LocalDateTime created;
     private NoteVersion noteVersion;
     private List<Comment> comments;
 
@@ -23,6 +23,6 @@ public class Note {
     public Note(String subject, int sectionId, NoteVersion noteVersion) {
         this.subject = subject;
         this.sectionId = sectionId;
-        this.noteVersion =noteVersion;
+        this.noteVersion = noteVersion;
     }
 }

@@ -84,4 +84,22 @@ public class BaseService {
     protected LocalDateTime getCurrentDateTime() {
         return LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
+
+
+    protected boolean isSuper(User user) {
+        return user.getType() == UserType.SUPER_USER;
+    }
+
+    protected boolean isAuthor(Comment comment, User user) {
+        return comment.getAuthorId() == user.getId();
+    }
+
+    protected boolean isAuthor(Section section, User user) {
+        return section.getUserId() == user.getId();
+    }
+
+
+    protected boolean isAuthor(Note note, User user) {
+        return note.getAuthorId() == user.getId();
+    }
 }

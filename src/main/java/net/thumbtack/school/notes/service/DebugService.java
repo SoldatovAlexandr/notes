@@ -23,8 +23,8 @@ public class DebugService extends BaseService {
 
     public SettingsDtoResponse getServerSettings() {
         return new SettingsDtoResponse(
-                config.getMinPasswordLength(),
                 config.getMaxNameLength(),
+                config.getMinPasswordLength(),
                 config.getUserIdleTimeout()
         );
     }

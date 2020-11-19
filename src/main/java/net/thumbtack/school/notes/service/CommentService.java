@@ -60,10 +60,13 @@ public class CommentService extends BaseService {
 
         Comment comment = getComment(commentId);
 
+        Note note = getNote(comment.getNoteId());
+
         checkCommentPermission(comment, session.getUser());
 
-        //TODO: сделать привязывание к текущей версии заметки
         comment.setBody(updateCommentDtoRequest.getBody());
+
+        comment.setRevisionId(note.getNoteVersion().getRevisionId());
 
         commentDao.updateComment(comment);
 
@@ -75,8 +78,9 @@ public class CommentService extends BaseService {
 
         Comment comment = getComment(commentId);
 
-        //TODO: сделать проверку на автора заметки
-        checkCommentPermission(comment, session.getUser());
+        Note note = getNote(comment.getNoteId());
+
+        checkCommentPermission(note, session.getUser(), comment);
 
         commentDao.deleteComment(comment);
 
@@ -90,7 +94,7 @@ public class CommentService extends BaseService {
 
         checkCommentPermission(note, session.getUser());
 
-        commentDao.deleteCommentsByNoteId(noteId);
+        commentDao.deleteCommentsByNote(noteId, note.getNoteVersion().getRevisionId());
 
         return new EmptyDtoResponse();
     }
@@ -101,8 +105,14 @@ public class CommentService extends BaseService {
         }
     }
 
+    private void checkCommentPermission(Note note, User user, Comment comment) throws ServerException {
+        if (!(isSuper(user) || isAuthor(note, user) || isAuthor(comment, user))) {
+            throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
+        }
+    }
+
     private void checkCommentPermission(Note note, User user) throws ServerException {
-        if (note.getAuthorId() != user.getId()) {
+        if (!isAuthor(note, user)) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
         }
     }

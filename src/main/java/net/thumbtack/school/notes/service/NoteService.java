@@ -54,10 +54,6 @@ public class NoteService extends BaseService {
         return NoteDtoMapper.INSTANCE.toNoteDtoResponse(note);
     }
 
-    private void insertNote(Note note) {
-        noteDao.insertNote(note);
-        insertNoteVersion(note.getNoteVersion(), note.getId());
-    }
 
     public NoteInfoDtoResponse updateNote(UpdateNoteDtoRequest updateNoteDtoRequest, int noteId, String token)
             throws ServerException {
@@ -65,7 +61,9 @@ public class NoteService extends BaseService {
 
         Note note = getNote(noteId);
 
-        checkNotePermission(note, session.getUser());
+        if (!isAuthor(note, session.getUser())) {
+            throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
+        }
 
         String body = updateNoteDtoRequest.getBody();
 
@@ -114,7 +112,7 @@ public class NoteService extends BaseService {
     }
 
     private void checkNotePermission(Note note, User user) throws ServerException {
-        if (note.getAuthorId() != user.getId()) {
+        if (!(isAuthor(note, user) || isSuper(user))) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
         }
     }
@@ -142,5 +140,10 @@ public class NoteService extends BaseService {
     private void insertNoteVersion(NoteVersion noteVersion, int noteId) {
         noteVersion.setId(noteId);
         noteDao.insertNoteVersion(noteVersion);
+    }
+
+    private void insertNote(Note note) {
+        noteDao.insertNote(note);
+        insertNoteVersion(note.getNoteVersion(), note.getId());
     }
 }

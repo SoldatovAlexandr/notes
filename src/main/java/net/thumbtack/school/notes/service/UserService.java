@@ -52,9 +52,14 @@ public class UserService extends BaseService {
             throw new ServerException(ServerErrorCodeWithField.LOGIN_NOT_EXIST);
         }
 
+        if (user.isDeleted()) {
+            throw new ServerException(ServerErrorCodeWithField.USER_IS_DELETED);
+        }
+
         if (!loginUserRequest.getPassword().equals(user.getPassword())) {
             throw new ServerException(ServerErrorCodeWithField.INCORRECT_PASSWORD);
         }
+
 
         addCookie(user, httpServletResponse);
 
@@ -120,12 +125,13 @@ public class UserService extends BaseService {
 
         User author = session.getUser();
 
-        //todo
-        if (!author.isDeleted() || author.getType() != UserType.SUPER_USER) {
+        if (author.getType() != UserType.SUPER_USER) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
         }
 
         User user = getUserById(id);
+
+        user.setType(UserType.SUPER_USER);
 
         userDao.setUserType(user);
 
@@ -180,7 +186,7 @@ public class UserService extends BaseService {
         return new EmptyDtoResponse();
     }
 
-    //TODO: сделать этот метод
+    //TODO: сделать этот метод и реализовать для него тесты
     public ProfileInfoDtoResponse getUsers(String sortByRating, String type, Integer from, Integer count, String token) throws ServerException {
         Session session = getSession(token);
 
@@ -206,6 +212,7 @@ public class UserService extends BaseService {
         }
 
         try {
+            userDao.deleteFollowing(ignoreId, ignoreById);
             userDao.insertIgnore(ignoreId, ignoreById);
         } catch (DuplicateKeyException e) {
             throw new ServerException(ServerErrorCodeWithField.IGNORE_ALREADY_EXIST);
@@ -236,6 +243,7 @@ public class UserService extends BaseService {
         }
 
         try {
+            userDao.deleteIgnore(followerId, followingId);
             userDao.insertFollowing(followerId, followingId);
         } catch (DuplicateKeyException e) {
             throw new ServerException(ServerErrorCodeWithField.FOLLOWING_ALREADY_EXIST);

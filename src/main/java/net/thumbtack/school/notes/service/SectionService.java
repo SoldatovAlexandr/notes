@@ -13,6 +13,7 @@ import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.model.Section;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
+import net.thumbtack.school.notes.model.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,9 @@ public class SectionService extends BaseService {
 
         Section section = getSection(sectionId);
 
-        checkSectionPermission(section, session.getUser());
+        if (!isAuthor(section, session.getUser())) {
+            throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
+        }
 
         section.setName(sectionDtoRequest.getName());
 
@@ -79,8 +82,6 @@ public class SectionService extends BaseService {
 
         List<Section> sections = sectionDao.getAllSections();
 
-        //check on null?
-
         return SectionDtoMapper.INSTANCE.toListSectionDtoResponse(sections);
     }
 
@@ -102,7 +103,7 @@ public class SectionService extends BaseService {
     }
 
     private void checkSectionPermission(Section section, User user) throws ServerException {
-        if (section.getUserId() != user.getId()) {
+        if (!(isAuthor(section, user) || isSuper(user))) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
         }
     }

@@ -28,8 +28,8 @@ public interface CommentMapper {
     @Delete("DELETE FROM comment WHERE id= #{id}")
     int deleteComment(Comment comment);
 
-    @Delete("DELETE FROM comment WHERE note_id= #{noteId}")
-    int deleteCommentsByNoteId(int noteId);
+    @Delete("DELETE FROM comment WHERE note_id= #{noteId} AND revision_id=#{revisionId}")
+    int deleteCommentsByNoteIdAndRevisionId(@Param("noteId") int noteId, @Param("revisionId") int revisionId);
 
     @Delete("DELETE FROM comment")
     void clear();

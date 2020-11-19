@@ -1,6 +1,7 @@
 package net.thumbtack.school.notes.erroritem.code;
 
 public enum ServerErrorCodeWithField {
+    USER_IS_DELETED("User is deleted","login"),
     WRONG_COMMENT_ID("wrong comment id", "commentId"),
     WRONG_NOTE_ID("wrong note id", "noteId"),
     WRONG_SECTION_ID("wrong section id", "sectionId"),

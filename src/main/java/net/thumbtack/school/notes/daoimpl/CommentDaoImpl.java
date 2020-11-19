@@ -43,8 +43,8 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public int deleteCommentsByNoteId(int noteId) {
-        LOGGER.debug("DAO delete comments by noteId: {}", noteId);
-        return commentMapper.deleteCommentsByNoteId(noteId);
+    public int deleteCommentsByNote(int noteId, int revisionId) {
+        LOGGER.debug("DAO delete comments by noteId: {} and revisionId: {}", noteId, revisionId);
+        return commentMapper.deleteCommentsByNoteIdAndRevisionId(noteId, revisionId);
     }
 }

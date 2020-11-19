@@ -21,8 +21,16 @@ public class Note {
 
 
     public Note(String subject, int sectionId, NoteVersion noteVersion) {
+        this(0, subject, sectionId, noteVersion, 0, null);
+    }
+
+    public Note(int id, String subject, int sectionId, NoteVersion noteVersion, int authorId, LocalDateTime created) {
+        this.id = id;
         this.subject = subject;
         this.sectionId = sectionId;
         this.noteVersion = noteVersion;
+        this.authorId = authorId;
+        this.created = created;
     }
+
 }

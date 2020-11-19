@@ -135,7 +135,7 @@ public class TestCommentDao extends TestBaseDao {
         commentDao.insertComment(comment1);
         commentDao.insertComment(comment2);
 
-        commentDao.deleteCommentsByNoteId(note.getId());
+        commentDao.deleteCommentsByNote(note.getId(), note.getNoteVersion().getRevisionId());
 
         Comment comment1FromDb = commentDao.getCommentById(comment1.getId());
         Comment comment2FromDb = commentDao.getCommentById(comment2.getId());

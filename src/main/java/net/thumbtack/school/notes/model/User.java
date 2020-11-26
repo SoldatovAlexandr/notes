@@ -2,6 +2,7 @@ package net.thumbtack.school.notes.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -19,9 +20,13 @@ public class User {
     private String password;
     private boolean deleted;
     private UserType type;
+    @EqualsAndHashCode.Exclude
     private List<User> followers;
+    @EqualsAndHashCode.Exclude
     private List<User> followings;
+    @EqualsAndHashCode.Exclude
     private List<User> ignore;
+    @EqualsAndHashCode.Exclude
     private List<User> ignoredBy;
 
     public User(String login, String password, String firstName,

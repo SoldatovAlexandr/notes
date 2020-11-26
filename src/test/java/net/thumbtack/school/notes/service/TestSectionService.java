@@ -44,16 +44,15 @@ public class TestSectionService {
         SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
 
         String token = "some-token";
-
-        SectionDtoRequest request = new SectionDtoRequest("section name");
-
-        Section section = new Section(10, "section name");
-
-        SectionDtoResponse expectedResponse = new SectionDtoResponse(0, "section name");
-
         Session session = Mockito.mock(Session.class);
 
         User user = Mockito.mock(User.class);
+
+        SectionDtoRequest request = new SectionDtoRequest("section name");
+
+        Section section = new Section(user, "section name");
+
+        SectionDtoResponse expectedResponse = new SectionDtoResponse(0, "section name");
 
         when(session.getUser()).thenReturn(user);
 
@@ -86,13 +85,13 @@ public class TestSectionService {
 
         String token = "some-token";
 
+        User user = Mockito.mock(User.class);
+
         SectionDtoRequest request = new SectionDtoRequest("section name");
 
-        Section section = new Section(10, "section name");
+        Section section = new Section(user, "section name");
 
         Session session = Mockito.mock(Session.class);
-
-        User user = Mockito.mock(User.class);
 
         when(session.getUser()).thenReturn(user);
 
@@ -113,15 +112,15 @@ public class TestSectionService {
 
         String token = "some-token";
 
+        User user = Mockito.mock(User.class);
+
         SectionDtoRequest request = new SectionDtoRequest("new section name");
 
-        Section section = new Section(1, 10, "section name");
+        Section section = new Section(1, user, "section name");
 
         SectionDtoResponse expectedResponse = new SectionDtoResponse(1, "new section name");
 
         Session session = Mockito.mock(Session.class);
-
-        User user = Mockito.mock(User.class);
 
         when(session.getUser()).thenReturn(user);
 
@@ -177,7 +176,9 @@ public class TestSectionService {
 
         SectionDtoRequest request = new SectionDtoRequest("new section name");
 
-        Section section = new Section(1, 100, "section name");
+        User author = Mockito.mock(User.class);
+
+        Section section = new Section(1, author, "section name");
 
         Session session = Mockito.mock(Session.class);
 
@@ -186,6 +187,8 @@ public class TestSectionService {
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(10);
+
+        when(author.getId()).thenReturn(100);
 
         when(user.getType()).thenReturn(UserType.SUPER_USER);
 
@@ -204,13 +207,13 @@ public class TestSectionService {
 
         String token = "some-token";
 
+        User user = Mockito.mock(User.class);
+
         SectionDtoRequest request = new SectionDtoRequest("new section name");
 
-        Section section = new Section(1, 10, "section name");
+        Section section = new Section(1, user, "section name");
 
         Session session = Mockito.mock(Session.class);
-
-        User user = Mockito.mock(User.class);
 
         when(session.getUser()).thenReturn(user);
 
@@ -233,11 +236,11 @@ public class TestSectionService {
 
         String token = "some-token";
 
-        Section section = new Section(1, 10, "section name");
+        User user = Mockito.mock(User.class);
+
+        Section section = new Section(1, user, "section name");
 
         Session session = Mockito.mock(Session.class);
-
-        User user = Mockito.mock(User.class);
 
         when(session.getUser()).thenReturn(user);
 
@@ -260,7 +263,9 @@ public class TestSectionService {
 
         String token = "some-token";
 
-        Section section = new Section(1, 10, "section name");
+        User author = Mockito.mock(User.class);
+
+        Section section = new Section(1, author, "section name");
 
         Session session = Mockito.mock(Session.class);
 
@@ -269,6 +274,8 @@ public class TestSectionService {
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(22);
+
+        when(author.getId()).thenReturn(100);
 
         when(user.getType()).thenReturn(UserType.SUPER_USER);
 
@@ -313,11 +320,15 @@ public class TestSectionService {
     public void testRemoveSectionFail3() {
         SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
 
-        Section section = new Section(1, 100, "section name");
+        User author = Mockito.mock(User.class);
+
+        Section section = new Section(1, author, "section name");
 
         Session session = Mockito.mock(Session.class);
 
         User user = Mockito.mock(User.class);
+
+        when(author.getId()).thenReturn(100);
 
         when(session.getUser()).thenReturn(user);
 
@@ -336,7 +347,10 @@ public class TestSectionService {
     public void testGetSection() throws ServerException {
         SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
 
-        Section section = new Section(1, 100, "section name");
+
+        User author = Mockito.mock(User.class);
+
+        Section section = new Section(1, author, "section name");
 
         Session session = Mockito.mock(Session.class);
 
@@ -345,6 +359,8 @@ public class TestSectionService {
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(22);
+
+        when(author.getId()).thenReturn(100);
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
@@ -391,9 +407,12 @@ public class TestSectionService {
         SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
 
         List<Section> sections = new ArrayList<>();
-        sections.add(new Section(1, 100, "section name 1"));
-        sections.add(new Section(2, 100, "section name 2"));
-        sections.add(new Section(3, 100, "section name 3"));
+
+        User author = Mockito.mock(User.class);
+
+        sections.add(new Section(1, author, "section name 1"));
+        sections.add(new Section(2, author, "section name 2"));
+        sections.add(new Section(3, author, "section name 3"));
 
         List<SectionDtoResponse> expectedResponse = new ArrayList<>();
         expectedResponse.add(new SectionDtoResponse(1, "section name 1"));
@@ -405,6 +424,8 @@ public class TestSectionService {
         User user = Mockito.mock(User.class);
 
         when(session.getUser()).thenReturn(user);
+
+        when(author.getId()).thenReturn(100);
 
         when(user.getId()).thenReturn(22);
 

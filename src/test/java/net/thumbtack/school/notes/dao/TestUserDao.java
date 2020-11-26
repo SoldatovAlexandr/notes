@@ -137,7 +137,6 @@ public class TestUserDao extends TestBaseDao {
         Assertions.assertNull(sessionFromDb);
     }
 
-    //TODO:тест не проходит, null pointer у списков объектов из базы.
     @Ignore
     @Test
     public void testInsertFollowing() {

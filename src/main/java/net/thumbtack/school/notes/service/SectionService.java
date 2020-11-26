@@ -13,7 +13,6 @@ import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.model.Section;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
-import net.thumbtack.school.notes.model.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ public class SectionService extends BaseService {
             throws ServerException {
         Session session = getSession(token);
 
-        Section section = new Section(session.getUser().getId(), sectionDtoRequest.getName());
+        Section section = new Section(session.getUser(), sectionDtoRequest.getName());
 
         insertSection(section);
 

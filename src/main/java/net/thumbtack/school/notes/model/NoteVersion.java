@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NoteVersion {
-    private int id;
+    private Note note;
     private int revisionId;
     private String body;
 

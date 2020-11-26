@@ -65,15 +65,17 @@ public class TestCommentService {
 
         when(noteDao.getNoteById(24)).thenReturn(note);
 
-        when(note.getNoteVersion()).thenReturn(noteVersion);
+        when(note.getCurrentVersion()).thenReturn(noteVersion);
 
         when(noteVersion.getRevisionId()).thenReturn(2);
+
+        when(note.getId()).thenReturn(24);
 
         CreateCommentDtoRequest request = new CreateCommentDtoRequest("body", 24);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(0, "body", 24, 10, 2, created);
+        Comment comment = new Comment(0, "body", note, user, 2, created);
 
         CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(0, "body", 24,
                 10, 2, created.toString());
@@ -132,9 +134,15 @@ public class TestCommentService {
 
         List<Comment> comments = new ArrayList<>();
 
-        comments.add(new Comment(1, "body", 12, 10, 2, created));
-        comments.add(new Comment(2, "body", 12, 11, 3, created));
-        comments.add(new Comment(3, "body", 12, 14, 1, created));
+        User author11 = Mockito.mock(User.class);
+        User author14 = Mockito.mock(User.class);
+
+        when(author11.getId()).thenReturn(11);
+        when(author14.getId()).thenReturn(14);
+
+        comments.add(new Comment(1, "body", note, user, 2, created));
+        comments.add(new Comment(2, "body", note, author11, 3, created));
+        comments.add(new Comment(3, "body", note, author14, 1, created));
 
         when(session.getUser()).thenReturn(user);
 
@@ -143,6 +151,8 @@ public class TestCommentService {
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
         when(noteDao.getNoteById(12)).thenReturn(note);
+
+        when(note.getId()).thenReturn(12);
 
         when(note.getComments()).thenReturn(comments);
 
@@ -197,15 +207,15 @@ public class TestCommentService {
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(44, "body", 12, 10, 2, created);
-
         Note note = Mockito.mock(Note.class);
+
+        User user = Mockito.mock(User.class);
+
+        Comment comment = new Comment(44, "body", note, user, 2, created);
 
         NoteVersion noteVersion = Mockito.mock(NoteVersion.class);
 
         Session session = Mockito.mock(Session.class);
-
-        User user = Mockito.mock(User.class);
 
         when(session.getUser()).thenReturn(user);
 
@@ -217,9 +227,11 @@ public class TestCommentService {
 
         when(commentDao.getCommentById(44)).thenReturn(comment);
 
-        when(note.getNoteVersion()).thenReturn(noteVersion);
+        when(note.getCurrentVersion()).thenReturn(noteVersion);
 
         when(noteVersion.getRevisionId()).thenReturn(2);
+
+        when(note.getId()).thenReturn(12);
 
         CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(44, "new body", 12, 10,
                 2, created.toString());
@@ -275,15 +287,19 @@ public class TestCommentService {
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(44, "body", 12, 10, 2, created);
-
-        Session session = Mockito.mock(Session.class);
+        Note note = Mockito.mock(Note.class);
 
         User user = Mockito.mock(User.class);
+
+        Comment comment = new Comment(44, "body", note, user, 2, created);
+
+        Session session = Mockito.mock(Session.class);
 
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(10);
+
+        when(note.getId()).thenReturn(12);
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
@@ -300,9 +316,11 @@ public class TestCommentService {
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(44, "body", 12, 100, 2, created);
+        User author = Mockito.mock(User.class);
 
         Note note = Mockito.mock(Note.class);
+
+        Comment comment = new Comment(44, "body", note, author, 2, created);
 
         NoteVersion noteVersion = Mockito.mock(NoteVersion.class);
 
@@ -314,13 +332,17 @@ public class TestCommentService {
 
         when(user.getId()).thenReturn(10);
 
+        when(author.getId()).thenReturn(100);
+
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
         when(noteDao.getNoteById(12)).thenReturn(note);
 
+        when(note.getId()).thenReturn(12);
+
         when(commentDao.getCommentById(44)).thenReturn(comment);
 
-        when(note.getNoteVersion()).thenReturn(noteVersion);
+        when(note.getCurrentVersion()).thenReturn(noteVersion);
 
         when(noteVersion.getRevisionId()).thenReturn(2);
 
@@ -337,21 +359,25 @@ public class TestCommentService {
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(44, "body", 12, 10, 2, created);
+        User user = Mockito.mock(User.class);
 
         Note note = Mockito.mock(Note.class);
 
-        Session session = Mockito.mock(Session.class);
+        Comment comment = new Comment(44, "body", note, user, 2, created);
 
-        User user = Mockito.mock(User.class);
+        Session session = Mockito.mock(Session.class);
 
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(10);
 
+        when(note.getAuthor()).thenReturn(user);
+
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
         when(noteDao.getNoteById(12)).thenReturn(note);
+
+        when(note.getId()).thenReturn(12);
 
         when(commentDao.getCommentById(44)).thenReturn(comment);
 
@@ -368,15 +394,19 @@ public class TestCommentService {
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(44, "body", 12, 10, 2, created);
-
         Note note = Mockito.mock(Note.class);
 
         Session session = Mockito.mock(Session.class);
 
         User user = Mockito.mock(User.class);
 
+        User author = Mockito.mock(User.class);
+
+        Comment comment = new Comment(44, "body", note, author, 2, created);
+
         when(session.getUser()).thenReturn(user);
+
+        when(author.getId()).thenReturn(10);
 
         when(user.getId()).thenReturn(101);
 
@@ -384,9 +414,11 @@ public class TestCommentService {
 
         when(noteDao.getNoteById(12)).thenReturn(note);
 
+        when(note.getId()).thenReturn(12);
+
         when(commentDao.getCommentById(44)).thenReturn(comment);
 
-        when(note.getAuthorId()).thenReturn(101);
+        when(note.getAuthor()).thenReturn(user);
 
         EmptyDtoResponse response = commentService.deleteComment(44, "some-token");
 
@@ -401,23 +433,29 @@ public class TestCommentService {
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(44, "body", 12, 10, 2, created);
-
         Note note = Mockito.mock(Note.class);
 
         Session session = Mockito.mock(Session.class);
 
         User user = Mockito.mock(User.class);
 
+        User author = Mockito.mock(User.class);
+
+        Comment comment = new Comment(44, "body", note, author, 2, created);
+
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(101);
+
+        when(author.getId()).thenReturn(10);
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
         when(noteDao.getNoteById(12)).thenReturn(note);
 
         when(commentDao.getCommentById(44)).thenReturn(comment);
+
+        when(note.getId()).thenReturn(12);
 
         when(user.getType()).thenReturn(UserType.SUPER_USER);
 
@@ -462,11 +500,13 @@ public class TestCommentService {
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(44, "body", 12, 10, 2, created);
-
         Session session = Mockito.mock(Session.class);
 
         User user = Mockito.mock(User.class);
+
+        Note note = Mockito.mock(Note.class);
+
+        Comment comment = new Comment(44, "body", note, user, 2, created);
 
         when(session.getUser()).thenReturn(user);
 
@@ -475,6 +515,8 @@ public class TestCommentService {
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
         when(commentDao.getCommentById(44)).thenReturn(comment);
+
+        when(note.getId()).thenReturn(12);
 
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.deleteComment(44, "some-token")
@@ -487,17 +529,25 @@ public class TestCommentService {
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(44, "body", 12, 10, 2, created);
-
         Note note = Mockito.mock(Note.class);
 
         Session session = Mockito.mock(Session.class);
 
         User user = Mockito.mock(User.class);
 
+        User author = Mockito.mock(User.class);
+
+        Comment comment = new Comment(44, "body", note, author, 2, created);
+
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(101);
+
+        when(note.getAuthor()).thenReturn(author);
+
+        when(author.getId()).thenReturn(10);
+
+        when(note.getId()).thenReturn(12);
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
@@ -530,11 +580,11 @@ public class TestCommentService {
 
         when(noteDao.getNoteById(22)).thenReturn(note);
 
-        when(note.getNoteVersion()).thenReturn(noteVersion);
+        when(note.getCurrentVersion()).thenReturn(noteVersion);
 
         when(noteVersion.getRevisionId()).thenReturn(2);
 
-        when(note.getAuthorId()).thenReturn(10);
+        when(note.getAuthor()).thenReturn(user);
 
         EmptyDtoResponse response = commentService.deleteComments(22, "some-token");
 
@@ -579,6 +629,8 @@ public class TestCommentService {
 
         User user = Mockito.mock(User.class);
 
+        User author = Mockito.mock(User.class);
+
         Note note = Mockito.mock(Note.class);
 
         NoteVersion noteVersion = Mockito.mock(NoteVersion.class);
@@ -587,15 +639,17 @@ public class TestCommentService {
 
         when(user.getId()).thenReturn(10);
 
+        when(author.getId()).thenReturn(101);
+
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
         when(noteDao.getNoteById(22)).thenReturn(note);
 
-        when(note.getNoteVersion()).thenReturn(noteVersion);
+        when(note.getCurrentVersion()).thenReturn(noteVersion);
 
         when(noteVersion.getRevisionId()).thenReturn(2);
 
-        when(note.getAuthorId()).thenReturn(101);
+        when(note.getAuthor()).thenReturn(author);
 
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.deleteComments(22, "some-token")

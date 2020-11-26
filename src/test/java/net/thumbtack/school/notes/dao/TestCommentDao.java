@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class TestCommentDao extends TestBaseDao {
@@ -16,21 +17,22 @@ public class TestCommentDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
-        NoteVersion noteVersion = new NoteVersion(0, 1, "body");
-        Note note = new Note(0, "subject", section.getId(), user.getId(),
-                getCurrentDateTime(), noteVersion, new ArrayList<>());
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
+
+        Note note = new Note(0, "subject", section, user, getCurrentDateTime(),
+                Collections.singletonList(noteVersion), new ArrayList<>());
 
         noteDao.insertNote(note);
 
-        noteVersion.setId(note.getId());
+        noteVersion.setNote(note);
 
         noteDao.insertNoteVersion(noteVersion);
 
-        Comment comment = new Comment(0, "body", note.getId(), user.getId(),
+        Comment comment = new Comment(0, "body", note, user,
                 noteVersion.getRevisionId(), getCurrentDateTime());
 
         commentDao.insertComment(comment);
@@ -46,21 +48,21 @@ public class TestCommentDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
-        NoteVersion noteVersion = new NoteVersion(0, 1, "body");
-        Note note = new Note(0, "subject", section.getId(), user.getId(),
-                getCurrentDateTime(), noteVersion, new ArrayList<>());
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
+        Note note = new Note(0, "subject", section, user, getCurrentDateTime(),
+                Collections.singletonList(noteVersion), new ArrayList<>());
 
         noteDao.insertNote(note);
 
-        noteVersion.setId(note.getId());
+        noteVersion.setNote(note);
 
         noteDao.insertNoteVersion(noteVersion);
 
-        Comment comment = new Comment(0, "body", note.getId(), user.getId(),
+        Comment comment = new Comment(0, "body", note, user,
                 noteVersion.getRevisionId(), getCurrentDateTime());
 
         commentDao.insertComment(comment);
@@ -80,21 +82,21 @@ public class TestCommentDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
-        NoteVersion noteVersion = new NoteVersion(0, 1, "body");
-        Note note = new Note(0, "subject", section.getId(), user.getId(),
-                getCurrentDateTime(), noteVersion, new ArrayList<>());
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
+        Note note = new Note(0, "subject", section, user, getCurrentDateTime(),
+                Collections.singletonList(noteVersion), new ArrayList<>());
 
         noteDao.insertNote(note);
 
-        noteVersion.setId(note.getId());
+        noteVersion.setNote(note);
 
         noteDao.insertNoteVersion(noteVersion);
 
-        Comment comment = new Comment(0, "body", note.getId(), user.getId(),
+        Comment comment = new Comment(0, "body", note, user,
                 noteVersion.getRevisionId(), getCurrentDateTime());
 
         commentDao.insertComment(comment);
@@ -112,30 +114,30 @@ public class TestCommentDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
-        NoteVersion noteVersion = new NoteVersion(0, 1, "body");
-        Note note = new Note(0, "subject", section.getId(), user.getId(),
-                getCurrentDateTime(), noteVersion, new ArrayList<>());
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
+        Note note = new Note(0, "subject", section, user, getCurrentDateTime(),
+                Collections.singletonList(noteVersion), new ArrayList<>());
 
         noteDao.insertNote(note);
 
-        noteVersion.setId(note.getId());
+        noteVersion.setNote(note);
 
         noteDao.insertNoteVersion(noteVersion);
 
-        Comment comment1 = new Comment(0, "body first comment", note.getId(), user.getId(),
+        Comment comment1 = new Comment(0, "body first comment", note, user,
                 noteVersion.getRevisionId(), getCurrentDateTime());
 
-        Comment comment2 = new Comment(0, "body second comment", note.getId(), user.getId(),
+        Comment comment2 = new Comment(0, "body second comment", note, user,
                 noteVersion.getRevisionId(), getCurrentDateTime());
 
         commentDao.insertComment(comment1);
         commentDao.insertComment(comment2);
 
-        commentDao.deleteCommentsByNote(note.getId(), note.getNoteVersion().getRevisionId());
+        commentDao.deleteCommentsByNote(note.getId(), note.getCurrentVersion().getRevisionId());
 
         Comment comment1FromDb = commentDao.getCommentById(comment1.getId());
         Comment comment2FromDb = commentDao.getCommentById(comment2.getId());

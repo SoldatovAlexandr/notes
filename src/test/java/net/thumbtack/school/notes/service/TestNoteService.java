@@ -22,6 +22,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -68,21 +70,25 @@ public class TestNoteService {
 
         when(sectionDao.getById(12)).thenReturn(section);
 
+        when(section.getId()).thenReturn(12);
+
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(0, "subject", "body",
                 12, 10, created.toString(), 1);
 
-        NoteVersion noteVersion = new NoteVersion(0, 1, "body");
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
-        Note note = new Note(0, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(0, "subject", section, noteVersions, user, created);
+        noteVersion.setNote(note);
 
         NoteInfoDtoResponse response = noteService.createNote(request, token);
 
         Assertions.assertAll(
-                () -> Assertions.assertEquals(expectedResponse, response),
-                () -> verify(noteDao).insertNote(note),
-                () -> verify(noteDao).insertNoteVersion(noteVersion)
+                () -> Assertions.assertEquals(expectedResponse, response)
         );
     }
 
@@ -128,17 +134,26 @@ public class TestNoteService {
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
-        Note note = new Note(1000, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+        noteVersions.add(noteVersion);
 
-        Session session = Mockito.mock(Session.class);
+        Section section = Mockito.mock(Section.class);
 
         User user = Mockito.mock(User.class);
+
+        Note note = new Note(1000, "subject", section, noteVersions, user, created);
+
+        noteVersion.setNote(note);
+
+        Session session = Mockito.mock(Session.class);
 
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(10);
+
+        when(section.getId()).thenReturn(12);
 
         when(userDao.getSessionByToken(token)).thenReturn(session);
 
@@ -189,13 +204,23 @@ public class TestNoteService {
 
         Session session = Mockito.mock(Session.class);
 
+        Section section = Mockito.mock(Section.class);
+
         User user = Mockito.mock(User.class);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
-        Note note = new Note(1000, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(1000, "subject", section, noteVersions, user, created);
+
+        noteVersion.setNote(note);
+
+        when(section.getId()).thenReturn(12);
 
         when(session.getUser()).thenReturn(user);
 
@@ -228,13 +253,19 @@ public class TestNoteService {
 
         Section section = Mockito.mock(Section.class);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
         User user = Mockito.mock(User.class);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Note note = new Note(1000, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(1000, "subject", section, noteVersions, user, created);
+
+        noteVersion.setNote(note);
 
         when(session.getUser()).thenReturn(user);
 
@@ -246,6 +277,8 @@ public class TestNoteService {
 
         when(sectionDao.getById(13)).thenReturn(section);
 
+        when(section.getId()).thenReturn(13);
+
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "body",
                 13, 10, created.toString(), 1);
 
@@ -256,7 +289,7 @@ public class TestNoteService {
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expectedResponse, response),
                 () -> verify(noteDao).updateNote(noteCaptor.capture()),
-                () -> Assertions.assertEquals(13, noteCaptor.getValue().getSectionId()),
+                () -> Assertions.assertEquals(13, noteCaptor.getValue().getSection().getId()),
                 () -> verify(noteDao, never()).insertNoteVersion(any())
         );
     }
@@ -269,13 +302,19 @@ public class TestNoteService {
 
         Section section = Mockito.mock(Section.class);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
         User user = Mockito.mock(User.class);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Note note = new Note(1000, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(1000, "subject", section, noteVersions, user, created);
+
+        noteVersion.setNote(note);
 
         when(session.getUser()).thenReturn(user);
 
@@ -287,6 +326,8 @@ public class TestNoteService {
 
         when(sectionDao.getById(13)).thenReturn(section);
 
+        when(section.getId()).thenReturn(13);
+
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "new body",
                 13, 10, created.toString(), 2);
 
@@ -297,7 +338,7 @@ public class TestNoteService {
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expectedResponse, response),
                 () -> verify(noteDao).updateNote(noteCaptor.capture()),
-                () -> Assertions.assertEquals(13, noteCaptor.getValue().getSectionId()),
+                () -> Assertions.assertEquals(13, noteCaptor.getValue().getSection().getId()),
                 () -> verify(noteDao).insertNoteVersion(noteVersionCaptor.capture()),
                 () -> Assertions.assertEquals("new body", noteVersionCaptor.getValue().getBody())
         );
@@ -321,13 +362,23 @@ public class TestNoteService {
 
         Session session = Mockito.mock(Session.class);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        Section section = Mockito.mock(Section.class);
+
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
         User user = Mockito.mock(User.class);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Note note = new Note(1000, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(1000, "subject", section, noteVersions, user, created);
+
+        noteVersion.setNote(note);
+
+        when(section.getId()).thenReturn(12);
 
         when(session.getUser()).thenReturn(user);
 
@@ -375,11 +426,21 @@ public class TestNoteService {
 
         User user = Mockito.mock(User.class);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        Section section = Mockito.mock(Section.class);
+
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Note note = new Note(1000, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(1000, "subject", section, noteVersions, user, created);
+
+        noteVersion.setNote(note);
+
+        when(section.getId()).thenReturn(12);
 
         when(session.getUser()).thenReturn(user);
 
@@ -405,15 +466,29 @@ public class TestNoteService {
 
         User user = Mockito.mock(User.class);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        User author = Mockito.mock(User.class);
+
+        Section section = Mockito.mock(Section.class);
+
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Note note = new Note(1000, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(1000, "subject", section, noteVersions, author, created);
+
+        noteVersion.setNote(note);
+
+        when(section.getId()).thenReturn(12);
 
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(45);
+
+        when(author.getId()).thenReturn(12);
 
         when(user.getType()).thenReturn(UserType.SUPER_USER);
 
@@ -465,15 +540,29 @@ public class TestNoteService {
 
         User user = Mockito.mock(User.class);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        User author = Mockito.mock(User.class);
+
+        Section section = Mockito.mock(Section.class);
+
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Note note = new Note(1000, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(1000, "subject", section, noteVersions, author, created);
+
+        noteVersion.setNote(note);
 
         when(session.getUser()).thenReturn(user);
 
         when(user.getId()).thenReturn(45);
+
+        when(author.getId()).thenReturn(10);
+
+        when(section.getId()).thenReturn(12);
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
@@ -492,13 +581,25 @@ public class TestNoteService {
 
         Session session = Mockito.mock(Session.class);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        User author = Mockito.mock(User.class);
+
+        Section section = Mockito.mock(Section.class);
+
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Note note = new Note(100, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(100, "subject", section, noteVersions, author, created);
+
+        noteVersion.setNote(note);
 
         when(session.getUser()).thenReturn(user);
+
+        when(author.getId()).thenReturn(10);
 
         when(user.getId()).thenReturn(45);
 
@@ -508,7 +609,7 @@ public class TestNoteService {
 
         AddRatingDtoRequest request = new AddRatingDtoRequest(5);
 
-        Rating rating = new Rating(45, 100, 5);
+        Rating rating = new Rating(user, note, 5);
 
         EmptyDtoResponse response = noteService.addRating(request, 100, "some-token");
 
@@ -534,13 +635,21 @@ public class TestNoteService {
 
         User user = Mockito.mock(User.class);
 
+        Section section = Mockito.mock(Section.class);
+
         Session session = Mockito.mock(Session.class);
 
-        NoteVersion noteVersion = new NoteVersion(1000, 1, "body");
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Note note = new Note(100, "subject", 12, noteVersion, 10, created);
+        List<NoteVersion> noteVersions = new ArrayList<>();
+
+        noteVersions.add(noteVersion);
+
+        Note note = new Note(100, "subject", section, noteVersions, user, created);
+
+        noteVersion.setNote(note);
 
         when(session.getUser()).thenReturn(user);
 

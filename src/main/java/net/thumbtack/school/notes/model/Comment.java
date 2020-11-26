@@ -2,6 +2,7 @@ package net.thumbtack.school.notes.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -12,14 +13,15 @@ import java.time.LocalDateTime;
 public class Comment {
     private int id;
     private String body;
-    private int noteId;
-    private int authorId;
+    @EqualsAndHashCode.Exclude
+    private Note note;
+    @EqualsAndHashCode.Exclude
+    private User author;
     private int revisionId;
     private LocalDateTime created;
 
-    public Comment(String body, int noteId) {
+    public Comment(String body, Note note) {
         this.body = body;
-        this.noteId = noteId;
+        this.note = note;
     }
-
 }

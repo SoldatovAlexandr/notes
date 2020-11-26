@@ -1,8 +1,6 @@
 package net.thumbtack.school.notes.mappers;
 
-import net.thumbtack.school.notes.model.Note;
-import net.thumbtack.school.notes.model.NoteVersion;
-import net.thumbtack.school.notes.model.Rating;
+import net.thumbtack.school.notes.model.*;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.mapping.FetchType;
 import org.springframework.stereotype.Component;
@@ -12,21 +10,26 @@ import java.util.List;
 @Component
 public interface NoteMapper {
     @Insert("INSERT INTO note (user_id, section_id, created, subject) VALUES "
-            + "(#{authorId}, #{sectionId}, #{created}, #{subject})")
+            + "(#{author.id}, #{section.id}, #{created}, #{subject})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertNote(Note note);
 
     @Insert("INSERT INTO note_version (note_id, revision_id, body) VALUES "
-            + "(#{id}, #{revisionId}, #{body})")
-    @Options(useGeneratedKeys = true, keyProperty = "noteVersion.id")
+            + "(#{note.id}, #{revisionId}, #{body})")
     void insertNoteVersion(NoteVersion noteVersion);
 
     @Select("SELECT id, user_id AS authorId, section_id AS sectionId, subject, created FROM note WHERE id = #{noteId}")
     @Results(
             {
                     @Result(property = "id", column = "id"),
-                    @Result(property = "noteVersion", column = "id", javaType = NoteVersion.class,
-                            one = @One(select = "net.thumbtack.school.notes.mappers.NoteMapper.getNoteVersionByNoteId",
+                    @Result(property = "author", column = "authorId", javaType = User.class,
+                            one = @One(select = "net.thumbtack.school.notes.mappers.UserMapper.getById",
+                                    fetchType = FetchType.LAZY)),
+                    @Result(property = "section", column = "sectionId", javaType = Section.class,
+                            one = @One(select = "net.thumbtack.school.notes.mappers.SectionMapper.getById",
+                                    fetchType = FetchType.LAZY)),
+                    @Result(property = "noteVersions", column = "id", javaType = List.class,
+                            many = @Many(select = "net.thumbtack.school.notes.mappers.NoteMapper.getNoteVersionByNoteId",
                                     fetchType = FetchType.LAZY)),
                     @Result(property = "comments", column = "id", javaType = List.class,
                             many = @Many(select = "net.thumbtack.school.notes.mappers.CommentMapper.getCommentsByNoteId",
@@ -35,10 +38,16 @@ public interface NoteMapper {
     )
     Note getNoteById(int noteId);
 
-    @Select("SELECT MAX(revision_id) AS revisionId, body, note_id AS id FROM note_version WHERE note_id = #{noteId}")
-    NoteVersion getNoteVersionByNoteId(int noteId);
+    @Select("SELECT revision_id AS revisionId, body, note_id FROM note_version WHERE note_id = #{noteId}")
+    @Results(
+            {
+                    @Result(property = "note", column = "note_id", javaType = Note.class,
+                            one = @One(select = "net.thumbtack.school.notes.mappers.NoteMapper.getNoteById",
+                                    fetchType = FetchType.LAZY))
+            })
+    List<NoteVersion> getNoteVersionByNoteId(int noteId);
 
-    @Update("UPDATE note SET  section_id = #{sectionId} WHERE id=#{id}")
+    @Update("UPDATE note SET  section_id = #{section.id} WHERE id=#{id}")
     void updateNote(Note note);
 
     @Delete("DELETE FROM note WHERE id= #{id}")
@@ -47,11 +56,21 @@ public interface NoteMapper {
     @Delete("DELETE FROM note")
     void clear();
 
-    @Insert("INSERT INTO rating (user_id, note_id, number) VALUES (#{authorId}, #{noteId}, #{number}) "
+    @Insert("INSERT INTO rating (user_id, note_id, number) VALUES (#{author.id}, #{note.id}, #{number}) "
             + "ON DUPLICATE KEY UPDATE number=#{number}")
     void insertRating(Rating rating);
 
     @Select("SELECT user_id AS authorId, note_id AS noteId, number FROM rating" +
             " WHERE user_id = #{userId} AND note_id = #{noteId}")
+    @Results(
+            {
+                    @Result(property = "author", column = "authorId", javaType = User.class,
+                            one = @One(select = "net.thumbtack.school.notes.mappers.UserMapper.getById",
+                                    fetchType = FetchType.LAZY)),
+                    @Result(property = "note", column = "noteId", javaType = Note.class,
+                            one = @One(select = "net.thumbtack.school.notes.mappers.NoteMapper.getNoteById",
+                                    fetchType = FetchType.LAZY))
+            }
+    )
     Rating getRating(@Param("userId") int userId, @Param("noteId") int noteId);
 }

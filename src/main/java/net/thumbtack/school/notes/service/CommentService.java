@@ -33,11 +33,11 @@ public class CommentService extends BaseService {
 
         Comment comment = CommentDtoMapper.INSTANCE.toComment(createCommentDtoRequest);
 
-        Note note = getNote(comment.getNoteId());
+        Note note = getNote(comment.getNote().getId());
 
-        comment.setAuthorId(session.getUser().getId());
+        comment.setAuthor(session.getUser());
 
-        comment.setRevisionId(note.getNoteVersion().getRevisionId());
+        comment.setRevisionId(note.getCurrentVersion().getRevisionId());
 
         comment.setCreated(getCurrentDateTime());
 
@@ -60,13 +60,13 @@ public class CommentService extends BaseService {
 
         Comment comment = getComment(commentId);
 
-        Note note = getNote(comment.getNoteId());
+        Note note = getNote(comment.getNote().getId());
 
         checkCommentPermission(comment, session.getUser());
 
         comment.setBody(updateCommentDtoRequest.getBody());
 
-        comment.setRevisionId(note.getNoteVersion().getRevisionId());
+        comment.setRevisionId(note.getCurrentVersion().getRevisionId());
 
         commentDao.updateComment(comment);
 
@@ -78,7 +78,7 @@ public class CommentService extends BaseService {
 
         Comment comment = getComment(commentId);
 
-        Note note = getNote(comment.getNoteId());
+        Note note = getNote(comment.getNote().getId());
 
         checkCommentPermission(note, session.getUser(), comment);
 
@@ -94,13 +94,13 @@ public class CommentService extends BaseService {
 
         checkCommentPermission(note, session.getUser());
 
-        commentDao.deleteCommentsByNote(noteId, note.getNoteVersion().getRevisionId());
+        commentDao.deleteCommentsByNote(noteId, note.getCurrentVersion().getRevisionId());
 
         return new EmptyDtoResponse();
     }
 
     private void checkCommentPermission(Comment comment, User user) throws ServerException {
-        if (comment.getAuthorId() != user.getId()) {
+        if (comment.getAuthor().getId() != user.getId()) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
         }
     }

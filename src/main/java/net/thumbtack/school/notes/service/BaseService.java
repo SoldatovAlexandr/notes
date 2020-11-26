@@ -91,15 +91,15 @@ public class BaseService {
     }
 
     protected boolean isAuthor(Comment comment, User user) {
-        return comment.getAuthorId() == user.getId();
+        return comment.getAuthor().getId() == user.getId();
     }
 
     protected boolean isAuthor(Section section, User user) {
-        return section.getUserId() == user.getId();
+        return section.getAuthor().getId() == user.getId();
     }
 
 
     protected boolean isAuthor(Note note, User user) {
-        return note.getAuthorId() == user.getId();
+        return note.getAuthor().getId() == user.getId();
     }
 }

@@ -18,7 +18,7 @@ public class TestSectionDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
@@ -33,7 +33,7 @@ public class TestSectionDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
@@ -52,7 +52,7 @@ public class TestSectionDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
@@ -67,13 +67,15 @@ public class TestSectionDao extends TestBaseDao {
     public void testInsertAndGetAllSections() {
         User user = new User("login", "password",
                 "firstName", "lastName", "patronymic");
+
         userDao.insert(user);
+
         List<Section> sections = new ArrayList<>();
 
-        sections.add(new Section(user.getId(), "Some section name1"));
-        sections.add(new Section(user.getId(), "Some section name2"));
-        sections.add(new Section(user.getId(), "Some section name3"));
-        sections.add(new Section(user.getId(), "Some section name4"));
+        sections.add(new Section(user, "Some section name1"));
+        sections.add(new Section(user, "Some section name2"));
+        sections.add(new Section(user, "Some section name3"));
+        sections.add(new Section(user, "Some section name4"));
 
         for (Section section : sections) {
             sectionDao.insert(section);

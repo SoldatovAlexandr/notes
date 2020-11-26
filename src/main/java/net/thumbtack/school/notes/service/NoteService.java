@@ -33,13 +33,13 @@ public class NoteService extends BaseService {
 
         Note note = NoteDtoMapper.INSTANCE.toNote(createNoteDtoRequest);
 
-        Section section = getSection(note.getSectionId());
+        Section section = getSection(note.getSection().getId());
 
-        note.setAuthorId(session.getUser().getId());
+        note.setAuthor(session.getUser());
 
         note.setCreated(getCurrentDateTime());
 
-        note.getNoteVersion().setRevisionId(START_REVISION_ID);
+        note.getCurrentVersion().setRevisionId(START_REVISION_ID);
 
         insertNote(note);
 
@@ -96,15 +96,15 @@ public class NoteService extends BaseService {
             throws ServerException {
         Session session = getSession(token);
 
-        int userId = session.getUser().getId();
+        User user = session.getUser();
 
         Note note = getNote(noteId);
 
-        if (note.getAuthorId() == userId) {
+        if (note.getAuthor().getId() == user.getId()) {
             throw new ServerException(ServerErrorCodeWithField.CAN_NOT_RATE);
         }
 
-        Rating rating = new Rating(userId, noteId, addRatingDtoRequest.getRating());
+        Rating rating = new Rating(user, note, addRatingDtoRequest.getRating());
 
         noteDao.insertRating(rating);
 
@@ -120,30 +120,32 @@ public class NoteService extends BaseService {
     private void addNoteVersion(String body, Note note) {
         NoteVersion noteVersion = new NoteVersion(body);
 
-        int newRevisionId = note.getNoteVersion().getRevisionId() + INCREMENT_REVISION_ID;
+        int newRevisionId = note.getCurrentVersion().getRevisionId() + INCREMENT_REVISION_ID;
 
         noteVersion.setRevisionId(newRevisionId);
 
-        insertNoteVersion(noteVersion, note.getId());
+        insertNoteVersion(noteVersion, note);
 
-        note.setNoteVersion(noteVersion);
+        note.getNoteVersions().add(noteVersion);
     }
 
     private void moveNoteToSection(Note note, int sectionId) throws ServerException {
         Section section = getSection(sectionId);
 
-        note.setSectionId(sectionId);
+        note.getSection().setId(sectionId);
 
         noteDao.updateNote(note);
     }
 
-    private void insertNoteVersion(NoteVersion noteVersion, int noteId) {
-        noteVersion.setId(noteId);
+    private void insertNoteVersion(NoteVersion noteVersion, Note note) {
+        noteVersion.setNote(note);
+
         noteDao.insertNoteVersion(noteVersion);
     }
 
     private void insertNote(Note note) {
         noteDao.insertNote(note);
-        insertNoteVersion(note.getNoteVersion(), note.getId());
+
+        insertNoteVersion(note.getCurrentVersion(), note);
     }
 }

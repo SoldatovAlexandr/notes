@@ -101,18 +101,78 @@ public interface UserMapper {
 
     @Select("SELECT id, first_name AS firstName, last_name AS lastName, patronymic, login, password, type, deleted " +
             "FROM user INNER JOIN following ON id=follower_id WHERE following_id =#{userId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "followers", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getFollowers",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "followings", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getFollowings",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "ignore", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getIgnore",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "ignoredBy", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getIgnoreBy",
+                            fetchType = FetchType.LAZY))
+    })
     List<User> getFollowers(int userId);
 
     @Select("SELECT id, first_name AS firstName, last_name AS lastName, patronymic, login, password, type, deleted " +
             "FROM user INNER JOIN following ON id=following_id WHERE follower_id =#{userId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "followers", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getFollowers",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "followings", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getFollowings",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "ignore", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getIgnore",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "ignoredBy", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getIgnoreBy",
+                            fetchType = FetchType.LAZY))
+    })
     List<User> getFollowings(int userId);
 
     @Select("SELECT id, first_name AS firstName, last_name AS lastName, patronymic, login, password, type, deleted " +
             "FROM user INNER JOIN ignoring ON id=ignore_id WHERE ignore_by_id =#{userId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "followers", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getFollowers",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "followings", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getFollowings",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "ignore", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getIgnore",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "ignoredBy", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getIgnoreBy",
+                            fetchType = FetchType.LAZY))
+    })
     List<User> getIgnore(int userId);
 
     @Select("SELECT id, first_name AS firstName, last_name AS lastName, patronymic, login, password, type, deleted " +
             "FROM user INNER JOIN ignoring ON id=ignore_by_id WHERE ignore_id =#{userId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "followers", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getFollowers",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "followings", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getFollowings",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "ignore", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getIgnore",
+                            fetchType = FetchType.LAZY)),
+            @Result(property = "ignoredBy", column = "id", javaType = List.class,
+                    many = @Many(select = "net.thumbtack.school.notes.mappers.UserMapper.getIgnoreBy",
+                            fetchType = FetchType.LAZY))
+    })
     List<User> getIgnoreBy(int userId);
 }
 

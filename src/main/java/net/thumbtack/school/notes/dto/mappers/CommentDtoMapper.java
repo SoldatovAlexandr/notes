@@ -3,6 +3,7 @@ package net.thumbtack.school.notes.dto.mappers;
 import net.thumbtack.school.notes.dto.request.CreateCommentDtoRequest;
 import net.thumbtack.school.notes.dto.response.CommentInfoDtoResponse;
 import net.thumbtack.school.notes.model.Comment;
+import net.thumbtack.school.notes.model.Note;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
@@ -16,9 +17,11 @@ public class CommentDtoMapper {
     public static final CommentDtoMapper INSTANCE = Mappers.getMapper(CommentDtoMapper.class);
 
     public Comment toComment(CreateCommentDtoRequest createCommentDtoRequest) {
+        Note note = new Note();
+        note.setId(createCommentDtoRequest.getNoteId());
         return new Comment(
                 createCommentDtoRequest.getBody(),
-                createCommentDtoRequest.getNoteId()
+                note
         );
     }
 
@@ -26,8 +29,8 @@ public class CommentDtoMapper {
         return new CommentInfoDtoResponse(
                 comment.getId(),
                 comment.getBody(),
-                comment.getNoteId(),
-                comment.getAuthorId(),
+                comment.getNote().getId(),
+                comment.getAuthor().getId(),
                 comment.getRevisionId(),
                 comment.getCreated().toString()
         );

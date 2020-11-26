@@ -1,10 +1,9 @@
 package net.thumbtack.school.notes.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Data
@@ -13,24 +12,29 @@ import java.util.List;
 public class Note {
     private int id;
     private String subject;
-    private int sectionId;
-    private int authorId;
+    private Section section;
+    private User author;
     private LocalDateTime created;
-    private NoteVersion noteVersion;
+    @EqualsAndHashCode.Exclude
+    private List<NoteVersion> noteVersions;
+    @EqualsAndHashCode.Exclude
     private List<Comment> comments;
 
 
-    public Note(String subject, int sectionId, NoteVersion noteVersion) {
-        this(0, subject, sectionId, noteVersion, 0, null);
+    public Note(String subject, Section section, List<NoteVersion> noteVersions) {
+        this(0, subject, section, noteVersions, null, null);
     }
 
-    public Note(int id, String subject, int sectionId, NoteVersion noteVersion, int authorId, LocalDateTime created) {
+    public Note(int id, String subject, Section section, List<NoteVersion> noteVersions, User author, LocalDateTime created) {
         this.id = id;
         this.subject = subject;
-        this.sectionId = sectionId;
-        this.noteVersion = noteVersion;
-        this.authorId = authorId;
+        this.section = section;
+        this.noteVersions = noteVersions;
+        this.author = author;
         this.created = created;
     }
 
+    public NoteVersion getCurrentVersion() {
+        return getNoteVersions().stream().max(Comparator.comparingInt(NoteVersion::getRevisionId)).get();
+    }
 }

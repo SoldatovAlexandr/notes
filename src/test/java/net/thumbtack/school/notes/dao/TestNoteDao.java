@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class TestNoteDao extends TestBaseDao {
@@ -16,23 +17,32 @@ public class TestNoteDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
-        NoteVersion noteVersion = new NoteVersion(0, 1, "body");
-        Note note = new Note(0, "subject", section.getId(), user.getId(),
-                getCurrentDateTime(), noteVersion, new ArrayList<>());
+        NoteVersion noteVersion = new NoteVersion(null, 1, "body");
+        Note note = new Note(0, "subject", section, user,
+                getCurrentDateTime(), Collections.singletonList(noteVersion), new ArrayList<>());
+
+        noteVersion.setNote(note);
 
         noteDao.insertNote(note);
-
-        noteVersion.setId(note.getId());
 
         noteDao.insertNoteVersion(noteVersion);
 
         Note noteFromDb = noteDao.getNoteById(note.getId());
 
-        Assertions.assertEquals(note, noteFromDb);
+        NoteVersion noteVersionFromDB = noteFromDb.getCurrentVersion();
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(note.getId(), noteFromDb.getId()),
+                () -> Assertions.assertEquals(note.getCreated(), noteFromDb.getCreated()),
+                () -> Assertions.assertEquals(note.getAuthor().getId(), noteFromDb.getAuthor().getId()),
+                () -> Assertions.assertEquals(noteVersion.getBody(), noteVersionFromDB.getBody()),
+                () -> Assertions.assertEquals(noteVersion.getRevisionId(), noteVersionFromDB.getRevisionId())
+        );
+
     }
 
     @Test
@@ -41,18 +51,18 @@ public class TestNoteDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section1 = new Section(user.getId(), "Some section name1");
-        Section section2 = new Section(user.getId(), "Some section name2");
+        Section section1 = new Section(user, "Some section name1");
+        Section section2 = new Section(user, "Some section name2");
 
         sectionDao.insert(section1);
         sectionDao.insert(section2);
 
-        Note note = new Note(0, "subject", section1.getId(), user.getId(),
-                getCurrentDateTime(), null, new ArrayList<>());
+        Note note = new Note(0, "subject", section1, user,
+                getCurrentDateTime(), Collections.emptyList(), new ArrayList<>());
 
         noteDao.insertNote(note);
 
-        note.setSectionId(section2.getId());
+        note.setSection(section2);
 
         noteDao.updateNote(note);
 
@@ -67,13 +77,13 @@ public class TestNoteDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
 
-        Note note = new Note(0, "subject", section.getId(), user.getId(),
-                getCurrentDateTime(), null, new ArrayList<>());
+        Note note = new Note(0, "subject", section, user, getCurrentDateTime(), Collections.emptyList(),
+                new ArrayList<>());
 
         noteDao.insertNote(note);
 
@@ -90,17 +100,17 @@ public class TestNoteDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
 
-        Note note = new Note(0, "subject", section.getId(), user.getId(),
+        Note note = new Note(0, "subject", section, user,
                 getCurrentDateTime(), null, new ArrayList<>());
 
         noteDao.insertNote(note);
 
-        Rating rating = new Rating(user.getId(), note.getId(), 5);
+        Rating rating = new Rating(user, note, 5);
 
         noteDao.insertRating(rating);
 
@@ -115,16 +125,16 @@ public class TestNoteDao extends TestBaseDao {
                 "firstName", "lastName", "patronymic");
         userDao.insert(user);
 
-        Section section = new Section(user.getId(), "Some section name");
+        Section section = new Section(user, "Some section name");
 
         sectionDao.insert(section);
 
-        Note note = new Note(0, "subject", section.getId(), user.getId(),
+        Note note = new Note(0, "subject", section, user,
                 getCurrentDateTime(), null, new ArrayList<>());
 
         noteDao.insertNote(note);
 
-        Rating rating = new Rating(user.getId(), note.getId(), 5);
+        Rating rating = new Rating(user, note, 5);
 
         noteDao.insertRating(rating);
 

@@ -1,5 +1,6 @@
 package net.thumbtack.school.notes.service;
 
+import net.thumbtack.school.notes.Config;
 import net.thumbtack.school.notes.dao.CommentDao;
 import net.thumbtack.school.notes.dao.NoteDao;
 import net.thumbtack.school.notes.dao.SectionDao;
@@ -40,6 +41,9 @@ public class TestCommentService {
     private NoteDao noteDao;
 
     @MockBean
+    private Config config;
+
+    @MockBean
     private SectionDao sectionDao;
 
     @Captor
@@ -47,7 +51,7 @@ public class TestCommentService {
 
     @Test
     public void testCreateComment() throws ServerException {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -71,6 +75,10 @@ public class TestCommentService {
 
         when(note.getId()).thenReturn(24);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         CreateCommentDtoRequest request = new CreateCommentDtoRequest("body", 24);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
@@ -90,7 +98,7 @@ public class TestCommentService {
 
     @Test
     public void testCreateCommentFail1() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         CreateCommentDtoRequest request = new CreateCommentDtoRequest("body", 24);
 
@@ -101,7 +109,7 @@ public class TestCommentService {
 
     @Test
     public void testCreateCommentFail2() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -113,6 +121,10 @@ public class TestCommentService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         CreateCommentDtoRequest request = new CreateCommentDtoRequest("body", 24);
 
         Assertions.assertThrows(
@@ -122,7 +134,7 @@ public class TestCommentService {
 
     @Test
     public void testGetComments() throws ServerException {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -135,9 +147,11 @@ public class TestCommentService {
         List<Comment> comments = new ArrayList<>();
 
         User author11 = Mockito.mock(User.class);
+
         User author14 = Mockito.mock(User.class);
 
         when(author11.getId()).thenReturn(11);
+
         when(author14.getId()).thenReturn(14);
 
         comments.add(new Comment(1, "body", note, user, 2, created));
@@ -155,6 +169,10 @@ public class TestCommentService {
         when(note.getId()).thenReturn(12);
 
         when(note.getComments()).thenReturn(comments);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         List<CommentInfoDtoResponse> expectedResponse = new ArrayList<>();
 
@@ -175,7 +193,7 @@ public class TestCommentService {
 
     @Test
     public void testGetCommentsFail1() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.getComments(12, "some-token")
@@ -184,7 +202,7 @@ public class TestCommentService {
 
     @Test
     public void testGetCommentsFail2() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -196,6 +214,10 @@ public class TestCommentService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.getComments(12, "some-token")
         );
@@ -203,7 +225,7 @@ public class TestCommentService {
 
     @Test
     public void testUpdateComment() throws ServerException {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -233,6 +255,10 @@ public class TestCommentService {
 
         when(note.getId()).thenReturn(12);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(44, "new body", 12, 10,
                 2, created.toString());
 
@@ -249,7 +275,7 @@ public class TestCommentService {
 
     @Test
     public void testUpdateCommentFail1() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         UpdateCommentDtoRequest request = new UpdateCommentDtoRequest("new body");
 
@@ -260,7 +286,7 @@ public class TestCommentService {
 
     @Test
     public void testUpdateCommentFail2() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         UpdateCommentDtoRequest request = new UpdateCommentDtoRequest("new body");
 
@@ -274,6 +300,10 @@ public class TestCommentService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.updateComment(request, 44, "some-token")
         );
@@ -281,7 +311,7 @@ public class TestCommentService {
 
     @Test
     public void testUpdateCommentFail3() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         UpdateCommentDtoRequest request = new UpdateCommentDtoRequest("new body");
 
@@ -305,6 +335,10 @@ public class TestCommentService {
 
         when(commentDao.getCommentById(44)).thenReturn(comment);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.updateComment(request, 44, "some-token")
         );
@@ -312,7 +346,7 @@ public class TestCommentService {
 
     @Test
     public void testUpdateCommentFail4() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -346,6 +380,10 @@ public class TestCommentService {
 
         when(noteVersion.getRevisionId()).thenReturn(2);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         UpdateCommentDtoRequest request = new UpdateCommentDtoRequest("new body");
 
         Assertions.assertThrows(
@@ -355,7 +393,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteComment1() throws ServerException {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -381,6 +419,10 @@ public class TestCommentService {
 
         when(commentDao.getCommentById(44)).thenReturn(comment);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         EmptyDtoResponse response = commentService.deleteComment(44, "some-token");
 
         Assertions.assertAll(
@@ -390,7 +432,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteComment2() throws ServerException {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -420,6 +462,10 @@ public class TestCommentService {
 
         when(note.getAuthor()).thenReturn(user);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         EmptyDtoResponse response = commentService.deleteComment(44, "some-token");
 
         Assertions.assertAll(
@@ -429,7 +475,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteComment3() throws ServerException {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -459,6 +505,10 @@ public class TestCommentService {
 
         when(user.getType()).thenReturn(UserType.SUPER_USER);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         EmptyDtoResponse response = commentService.deleteComment(44, "some-token");
 
         Assertions.assertAll(
@@ -468,7 +518,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteCommentFail1() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.deleteComment(44, "some-token")
@@ -477,7 +527,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteCommentFail2() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -489,6 +539,10 @@ public class TestCommentService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.deleteComment(44, "some-token")
         );
@@ -496,7 +550,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteCommentFail3() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -518,6 +572,10 @@ public class TestCommentService {
 
         when(note.getId()).thenReturn(12);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.deleteComment(44, "some-token")
         );
@@ -525,7 +583,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteCommentFail4() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -555,6 +613,10 @@ public class TestCommentService {
 
         when(commentDao.getCommentById(44)).thenReturn(comment);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.deleteComment(44, "some-token")
         );
@@ -562,7 +624,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteComments() throws ServerException {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -586,6 +648,10 @@ public class TestCommentService {
 
         when(note.getAuthor()).thenReturn(user);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         EmptyDtoResponse response = commentService.deleteComments(22, "some-token");
 
         Assertions.assertAll(
@@ -595,7 +661,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteCommentsFail1() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.deleteComments(22, "some-token")
@@ -604,7 +670,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteCommentsFail2() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -616,6 +682,10 @@ public class TestCommentService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.deleteComments(22, "some-token")
         );
@@ -623,7 +693,7 @@ public class TestCommentService {
 
     @Test
     public void testDeleteCommentsFail3() {
-        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao);
+        CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -650,6 +720,10 @@ public class TestCommentService {
         when(noteVersion.getRevisionId()).thenReturn(2);
 
         when(note.getAuthor()).thenReturn(author);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
                 ServerException.class, () -> commentService.deleteComments(22, "some-token")

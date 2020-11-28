@@ -1,5 +1,6 @@
 package net.thumbtack.school.notes.service;
 
+import net.thumbtack.school.notes.Config;
 import net.thumbtack.school.notes.dao.CommentDao;
 import net.thumbtack.school.notes.dao.NoteDao;
 import net.thumbtack.school.notes.dao.SectionDao;
@@ -23,8 +24,8 @@ import java.util.List;
 public class SectionService extends BaseService {
 
     @Autowired
-    public SectionService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao) {
-        super(userDao, sectionDao, noteDao, commentDao);
+    public SectionService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao, Config config) {
+        super(userDao, sectionDao, noteDao, commentDao, config);
     }
 
     public SectionDtoResponse createSection(SectionDtoRequest sectionDtoRequest, String token)

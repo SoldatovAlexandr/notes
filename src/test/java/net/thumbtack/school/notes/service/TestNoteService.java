@@ -1,5 +1,6 @@
 package net.thumbtack.school.notes.service;
 
+import net.thumbtack.school.notes.Config;
 import net.thumbtack.school.notes.dao.CommentDao;
 import net.thumbtack.school.notes.dao.NoteDao;
 import net.thumbtack.school.notes.dao.SectionDao;
@@ -42,6 +43,9 @@ public class TestNoteService {
     @MockBean
     private SectionDao sectionDao;
 
+    @MockBean
+    private Config config;
+
     @Captor
     ArgumentCaptor<NoteVersion> noteVersionCaptor;
 
@@ -50,7 +54,7 @@ public class TestNoteService {
 
     @Test
     public void testInsertNote() throws ServerException {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         CreateNoteDtoRequest request = new CreateNoteDtoRequest("subject", "body", 12);
 
@@ -71,6 +75,10 @@ public class TestNoteService {
         when(sectionDao.getById(12)).thenReturn(section);
 
         when(section.getId()).thenReturn(12);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -94,7 +102,7 @@ public class TestNoteService {
 
     @Test
     public void testInsertNoteFail1() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         CreateNoteDtoRequest request = new CreateNoteDtoRequest("subject", "body", 12);
 
@@ -105,7 +113,7 @@ public class TestNoteService {
 
     @Test
     public void testInsertNoteFail2() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         CreateNoteDtoRequest request = new CreateNoteDtoRequest("subject", "body", 12);
 
@@ -121,6 +129,10 @@ public class TestNoteService {
 
         when(userDao.getSessionByToken(token)).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> noteService.createNote(request, token)
         );
@@ -128,7 +140,7 @@ public class TestNoteService {
 
     @Test
     public void testGetNoteInfo() throws ServerException {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         String token = "some-token";
 
@@ -158,6 +170,10 @@ public class TestNoteService {
         when(userDao.getSessionByToken(token)).thenReturn(session);
 
         when(noteDao.getNoteById(1000)).thenReturn(note);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "body",
                 12, 10, created.toString(), 1);
@@ -172,7 +188,7 @@ public class TestNoteService {
 
     @Test
     public void testGetNoteInfoFail1() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
                 ServerException.class, () -> noteService.getNoteInfo(1000, "some-token")
@@ -181,7 +197,7 @@ public class TestNoteService {
 
     @Test
     public void testGetNoteInfoFail2() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -193,6 +209,10 @@ public class TestNoteService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> noteService.getNoteInfo(1000, "some-token")
         );
@@ -200,7 +220,7 @@ public class TestNoteService {
 
     @Test
     public void testUpdateNote1() throws ServerException {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -229,6 +249,10 @@ public class TestNoteService {
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
         when(noteDao.getNoteById(1000)).thenReturn(note);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "new body",
                 12, 10, created.toString(), 2);
@@ -247,7 +271,7 @@ public class TestNoteService {
 
     @Test
     public void testUpdateNote2() throws ServerException {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -278,6 +302,10 @@ public class TestNoteService {
         when(sectionDao.getById(13)).thenReturn(section);
 
         when(section.getId()).thenReturn(13);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "body",
                 13, 10, created.toString(), 1);
@@ -296,7 +324,7 @@ public class TestNoteService {
 
     @Test
     public void testUpdateNote3() throws ServerException {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -327,6 +355,10 @@ public class TestNoteService {
         when(sectionDao.getById(13)).thenReturn(section);
 
         when(section.getId()).thenReturn(13);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "new body",
                 13, 10, created.toString(), 2);
@@ -347,7 +379,7 @@ public class TestNoteService {
 
     @Test
     public void testUpdateNoteFail1() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         UpdateNoteDtoRequest request = new UpdateNoteDtoRequest("new body", 13);
 
@@ -358,7 +390,7 @@ public class TestNoteService {
 
     @Test
     public void testUpdateNoteFail2() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -390,6 +422,10 @@ public class TestNoteService {
 
         when(noteDao.getNoteById(1000)).thenReturn(note);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         UpdateNoteDtoRequest request = new UpdateNoteDtoRequest("new body", 13);
 
         Assertions.assertThrows(
@@ -399,7 +435,7 @@ public class TestNoteService {
 
     @Test
     public void testUpdateNoteFail3() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -411,6 +447,10 @@ public class TestNoteService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         UpdateNoteDtoRequest request = new UpdateNoteDtoRequest("new body", null);
 
         Assertions.assertThrows(
@@ -420,7 +460,7 @@ public class TestNoteService {
 
     @Test
     public void testDeleteNote1() throws ServerException {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -450,6 +490,10 @@ public class TestNoteService {
 
         when(noteDao.getNoteById(100)).thenReturn(note);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         EmptyDtoResponse emptyDtoResponse = noteService.deleteNote(100, "some-token");
 
         Assertions.assertAll(
@@ -460,7 +504,7 @@ public class TestNoteService {
 
     @Test
     public void testDeleteNote2() throws ServerException {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -496,6 +540,10 @@ public class TestNoteService {
 
         when(noteDao.getNoteById(100)).thenReturn(note);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         EmptyDtoResponse emptyDtoResponse = noteService.deleteNote(100, "some-token");
 
         Assertions.assertAll(
@@ -506,7 +554,7 @@ public class TestNoteService {
 
     @Test
     public void testDeleteNoteFail1() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
                 ServerException.class, () -> noteService.deleteNote(100, "some-token")
@@ -515,7 +563,7 @@ public class TestNoteService {
 
     @Test
     public void testDeleteNoteFail2() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -527,6 +575,10 @@ public class TestNoteService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> noteService.deleteNote(100, "some-token")
         );
@@ -534,7 +586,7 @@ public class TestNoteService {
 
     @Test
     public void testDeleteNoteFail3() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -568,6 +620,10 @@ public class TestNoteService {
 
         when(noteDao.getNoteById(100)).thenReturn(note);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> noteService.deleteNote(100, "some-token")
         );
@@ -575,7 +631,7 @@ public class TestNoteService {
 
     @Test
     public void testAddRating() throws ServerException {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         User user = Mockito.mock(User.class);
 
@@ -607,6 +663,10 @@ public class TestNoteService {
 
         when(noteDao.getNoteById(100)).thenReturn(note);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         AddRatingDtoRequest request = new AddRatingDtoRequest(5);
 
         Rating rating = new Rating(user, note, 5);
@@ -620,7 +680,7 @@ public class TestNoteService {
 
     @Test
     public void testAddRatingFail1() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         AddRatingDtoRequest request = new AddRatingDtoRequest(5);
 
@@ -631,7 +691,7 @@ public class TestNoteService {
 
     @Test
     public void testAddRatingFail2() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         User user = Mockito.mock(User.class);
 
@@ -659,6 +719,10 @@ public class TestNoteService {
 
         when(noteDao.getNoteById(100)).thenReturn(note);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         AddRatingDtoRequest request = new AddRatingDtoRequest(5);
 
         Assertions.assertThrows(
@@ -668,7 +732,7 @@ public class TestNoteService {
 
     @Test
     public void testAddRatingFail3() {
-        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao);
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
 
         User user = Mockito.mock(User.class);
 
@@ -679,6 +743,10 @@ public class TestNoteService {
         when(user.getId()).thenReturn(10);
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         AddRatingDtoRequest request = new AddRatingDtoRequest(5);
 

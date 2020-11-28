@@ -1,5 +1,6 @@
 package net.thumbtack.school.notes.service;
 
+import net.thumbtack.school.notes.Config;
 import net.thumbtack.school.notes.dao.CommentDao;
 import net.thumbtack.school.notes.dao.NoteDao;
 import net.thumbtack.school.notes.dao.SectionDao;
@@ -21,22 +22,29 @@ public class BaseService {
     protected final SectionDao sectionDao;
     protected final NoteDao noteDao;
     protected final CommentDao commentDao;
+    protected final Config config;
 
     protected final String cookieName = "JAVASESSIONID";
 
-    public BaseService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao) {
+
+    public BaseService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao, Config config) {
         this.userDao = userDao;
         this.sectionDao = sectionDao;
         this.noteDao = noteDao;
         this.commentDao = commentDao;
+        this.config = config;
     }
 
     protected Session getSession(String token) throws ServerException {
         Session session = userDao.getSessionByToken(token);
 
-        if (session == null) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (session == null || !isActiveSession(session.getDate(), now)) {
             throw new ServerException(ServerErrorCodeWithField.UNAUTHORIZED_ACCESS);
         }
+
+        updateSession(session, now);
 
         return session;
     }
@@ -101,5 +109,15 @@ public class BaseService {
 
     protected boolean isAuthor(Note note, User user) {
         return note.getAuthor().getId() == user.getId();
+    }
+
+    private boolean isActiveSession(LocalDateTime dateTime, LocalDateTime now) {
+        return now.minusSeconds(config.getUserIdleTimeout()).isBefore(dateTime);
+    }
+
+    private void updateSession(Session session, LocalDateTime now) {
+        session.setDate(now);
+
+        userDao.updateSession(session);
     }
 }

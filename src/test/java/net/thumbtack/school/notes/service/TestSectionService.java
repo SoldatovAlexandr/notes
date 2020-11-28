@@ -1,5 +1,6 @@
 package net.thumbtack.school.notes.service;
 
+import net.thumbtack.school.notes.Config;
 import net.thumbtack.school.notes.dao.CommentDao;
 import net.thumbtack.school.notes.dao.NoteDao;
 import net.thumbtack.school.notes.dao.SectionDao;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +41,12 @@ public class TestSectionService {
     @MockBean
     private SectionDao sectionDao;
 
+    @MockBean
+    private Config config;
+
     @Test
     public void testCreateSection() throws ServerException {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         String token = "some-token";
         Session session = Mockito.mock(Session.class);
@@ -60,6 +65,10 @@ public class TestSectionService {
 
         when(userDao.getSessionByToken(token)).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         SectionDtoResponse response = sectionService.createSection(request, token);
 
         Assertions.assertAll(
@@ -70,7 +79,7 @@ public class TestSectionService {
 
     @Test
     public void testCreateSectionFail1() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         SectionDtoRequest request = new SectionDtoRequest("section name");
 
@@ -81,7 +90,7 @@ public class TestSectionService {
 
     @Test
     public void testCreateSectionFail2() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         String token = "some-token";
 
@@ -99,6 +108,10 @@ public class TestSectionService {
 
         when(userDao.getSessionByToken(token)).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         doThrow(DuplicateKeyException.class).when(sectionDao).insert(section);
 
         Assertions.assertThrows(
@@ -108,7 +121,7 @@ public class TestSectionService {
 
     @Test
     public void testRenameSection() throws ServerException {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         String token = "some-token";
 
@@ -130,6 +143,10 @@ public class TestSectionService {
 
         when(sectionDao.getById(1)).thenReturn(section);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         SectionDtoResponse response = sectionService.renameSection(request, 1, token);
 
         Assertions.assertAll(
@@ -140,7 +157,7 @@ public class TestSectionService {
 
     @Test
     public void testRenameSectionFail1() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         SectionDtoRequest request = new SectionDtoRequest("section name");
 
@@ -151,7 +168,7 @@ public class TestSectionService {
 
     @Test
     public void testRenameSectionFail2() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         SectionDtoRequest request = new SectionDtoRequest("new section name");
 
@@ -163,6 +180,10 @@ public class TestSectionService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> sectionService.renameSection(request, 1, "some-token")
         );
@@ -170,7 +191,7 @@ public class TestSectionService {
 
     @Test
     public void testRenameSectionFail3() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         String token = "some-token";
 
@@ -196,6 +217,10 @@ public class TestSectionService {
 
         when(sectionDao.getById(1)).thenReturn(section);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> sectionService.renameSection(request, 1, "some-token")
         );
@@ -203,7 +228,7 @@ public class TestSectionService {
 
     @Test
     public void testRenameSectionFail4() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         String token = "some-token";
 
@@ -222,6 +247,10 @@ public class TestSectionService {
         when(userDao.getSessionByToken(token)).thenReturn(session);
 
         when(sectionDao.getById(1)).thenReturn(section);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         doThrow(DuplicateKeyException.class).when(sectionDao).update(section);
 
@@ -232,7 +261,7 @@ public class TestSectionService {
 
     @Test
     public void testRemoveSection1() throws ServerException {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         String token = "some-token";
 
@@ -250,6 +279,10 @@ public class TestSectionService {
 
         when(sectionDao.getById(1)).thenReturn(section);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         EmptyDtoResponse response = sectionService.removeSection(1, token);
 
         Assertions.assertAll(
@@ -259,7 +292,7 @@ public class TestSectionService {
 
     @Test
     public void testRemoveSection2() throws ServerException {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         String token = "some-token";
 
@@ -283,6 +316,10 @@ public class TestSectionService {
 
         when(sectionDao.getById(1)).thenReturn(section);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         EmptyDtoResponse response = sectionService.removeSection(1, token);
 
         Assertions.assertAll(
@@ -292,7 +329,7 @@ public class TestSectionService {
 
     @Test
     public void testRemoveSectionFail1() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
                 ServerException.class, () -> sectionService.removeSection(1, "some-token")
@@ -301,7 +338,7 @@ public class TestSectionService {
 
     @Test
     public void testRemoveSectionFail2() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -310,6 +347,10 @@ public class TestSectionService {
         when(session.getUser()).thenReturn(user);
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
                 ServerException.class, () -> sectionService.removeSection(1, "some-token")
@@ -318,7 +359,7 @@ public class TestSectionService {
 
     @Test
     public void testRemoveSectionFail3() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         User author = Mockito.mock(User.class);
 
@@ -337,6 +378,10 @@ public class TestSectionService {
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
         when(sectionDao.getById(1)).thenReturn(section);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
                 ServerException.class, () -> sectionService.removeSection(1, "some-token")
@@ -345,8 +390,7 @@ public class TestSectionService {
 
     @Test
     public void testGetSection() throws ServerException {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
-
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         User author = Mockito.mock(User.class);
 
@@ -365,6 +409,10 @@ public class TestSectionService {
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
         when(sectionDao.getById(1)).thenReturn(section);
+
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
 
         SectionDtoResponse expectedResponse = new SectionDtoResponse(1, "section name");
 
@@ -378,7 +426,7 @@ public class TestSectionService {
 
     @Test
     public void testGetSectionFail1() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
                 ServerException.class, () -> sectionService.getSection(1, "some-token")
@@ -387,7 +435,7 @@ public class TestSectionService {
 
     @Test
     public void testGetSectionFail2() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
@@ -397,6 +445,10 @@ public class TestSectionService {
 
         when(userDao.getSessionByToken("some-token")).thenReturn(session);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         Assertions.assertThrows(
                 ServerException.class, () -> sectionService.getSection(1, "some-token")
         );
@@ -404,7 +456,7 @@ public class TestSectionService {
 
     @Test
     public void testGetSections() throws ServerException {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         List<Section> sections = new ArrayList<>();
 
@@ -433,6 +485,10 @@ public class TestSectionService {
 
         when(sectionDao.getAllSections()).thenReturn(sections);
 
+        when(config.getUserIdleTimeout()).thenReturn(3600);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
         List<SectionDtoResponse> response = sectionService.getSections("some-token");
 
         Assertions.assertAll(
@@ -443,7 +499,7 @@ public class TestSectionService {
 
     @Test
     public void testGetSectionsFail() {
-        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao);
+        SectionService sectionService = new SectionService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
                 ServerException.class, () -> sectionService.getSections("some-token")

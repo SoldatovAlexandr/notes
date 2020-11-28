@@ -9,14 +9,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DebugService extends BaseService {
-    private final Config config;
+
     private final CommonDao commonDao;
 
     @Autowired
     public DebugService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao,
                         CommentDao commentDao, Config config, CommonDao commonDao) {
-        super(userDao, sectionDao, noteDao, commentDao);
-        this.config = config;
+        super(userDao, sectionDao, noteDao, commentDao, config);
         this.commonDao = commonDao;
     }
 

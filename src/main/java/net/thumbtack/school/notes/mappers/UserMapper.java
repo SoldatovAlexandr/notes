@@ -174,5 +174,8 @@ public interface UserMapper {
                             fetchType = FetchType.LAZY))
     })
     List<User> getIgnoreBy(int userId);
+
+    @Update("UPDATE session SET last_action=#{date} WHERE token=#{token}")
+    void updateSession(Session session);
 }
 

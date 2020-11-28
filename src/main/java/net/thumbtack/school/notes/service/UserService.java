@@ -1,5 +1,6 @@
 package net.thumbtack.school.notes.service;
 
+import net.thumbtack.school.notes.Config;
 import net.thumbtack.school.notes.dao.CommentDao;
 import net.thumbtack.school.notes.dao.NoteDao;
 import net.thumbtack.school.notes.dao.SectionDao;
@@ -26,8 +27,8 @@ import java.util.UUID;
 public class UserService extends BaseService {
 
     @Autowired
-    public UserService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao) {
-        super(userDao, sectionDao, noteDao, commentDao);
+    public UserService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao, Config config) {
+        super(userDao, sectionDao, noteDao, commentDao, config);
     }
 
     public ProfileInfoDtoResponse registerUser(RegisterUserDtoRequest registerUserDtoRequest,

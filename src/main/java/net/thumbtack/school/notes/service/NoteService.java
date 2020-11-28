@@ -1,5 +1,6 @@
 package net.thumbtack.school.notes.service;
 
+import net.thumbtack.school.notes.Config;
 import net.thumbtack.school.notes.dao.CommentDao;
 import net.thumbtack.school.notes.dao.NoteDao;
 import net.thumbtack.school.notes.dao.SectionDao;
@@ -22,8 +23,8 @@ public class NoteService extends BaseService {
     private static final int INCREMENT_REVISION_ID = 1;
 
     @Autowired
-    public NoteService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao) {
-        super(userDao, sectionDao, noteDao, commentDao);
+    public NoteService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao, Config config) {
+        super(userDao, sectionDao, noteDao, commentDao, config);
     }
 
 

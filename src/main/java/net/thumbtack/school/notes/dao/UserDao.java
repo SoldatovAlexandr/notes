@@ -15,6 +15,8 @@ public interface UserDao {
 
     void insertSession(Session session);
 
+    void updateSession(Session session);
+
     Session getSessionByToken(String token);
 
     int deleteSessionByToken(String token);

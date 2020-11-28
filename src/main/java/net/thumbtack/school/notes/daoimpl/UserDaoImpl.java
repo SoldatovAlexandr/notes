@@ -52,6 +52,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public void updateSession(Session session) {
+        LOGGER.debug("DAO update session: {}", session);
+        userMapper.updateSession(session);
+    }
+
+    @Override
     public Session getSessionByToken(String token) {
         LOGGER.debug("DAO get session by token: {}", token);
         return userMapper.getSessionByToken(token);

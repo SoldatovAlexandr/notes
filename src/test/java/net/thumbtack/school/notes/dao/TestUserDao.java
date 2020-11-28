@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -100,6 +101,36 @@ public class TestUserDao extends TestBaseDao {
     }
 
     @Test
+    public void testInsertAndUpdateSession() {
+        User user = new User("login", "password",
+                "first", "lastName", "patronymic");
+        userDao.insert(user);
+
+        String token = UUID.randomUUID().toString();
+
+        LocalDateTime secondDateTime = getCurrentDateTime();
+
+        LocalDateTime firstDataTime = secondDateTime.minusSeconds(3000);
+
+        Session session = new Session(user, token, firstDataTime);
+
+        userDao.insertSession(session);
+
+        Session firstSessionFromDb = userDao.getSessionByToken(token);
+
+        session.setDate(secondDateTime);
+
+        userDao.updateSession(session);
+
+        Session secondSessionFromDb = userDao.getSessionByToken(token);
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(firstDataTime, firstSessionFromDb.getDate()),
+                () -> Assertions.assertEquals(secondDateTime, secondSessionFromDb.getDate())
+        );
+    }
+
+    @Test
     public void testInsertAndDeleteSessionByToken() {
         User user = new User("login", "password",
                 "first", "lastName", "patronymic");
@@ -160,8 +191,6 @@ public class TestUserDao extends TestBaseDao {
         );
     }
 
-    //TODO:тест не проходит, null pointer у списков объектов из базы.
-    @Ignore
     @Test
     public void testInsertIgnore() {
         User user1 = new User("login1", "password",

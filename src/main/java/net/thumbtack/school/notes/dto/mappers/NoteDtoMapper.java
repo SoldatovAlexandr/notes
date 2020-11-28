@@ -9,13 +9,18 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public class NoteDtoMapper {
     public static final NoteDtoMapper INSTANCE = Mappers.getMapper(NoteDtoMapper.class);
+
+    private final DateTimeFormatter dateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     public Note toNote(CreateNoteDtoRequest request) {
         List<NoteVersion> noteVersions = Collections.singletonList(new NoteVersion(request.getBody()));
@@ -35,7 +40,7 @@ public class NoteDtoMapper {
                 noteVersion.getBody(),
                 note.getSection().getId(),
                 note.getAuthor().getId(),
-                note.getCreated().toString(), //TODO:set format!!!!!!!!!!
+                note.getCreated().format(dateTimeFormatter),
                 noteVersion.getRevisionId()
         );
     }

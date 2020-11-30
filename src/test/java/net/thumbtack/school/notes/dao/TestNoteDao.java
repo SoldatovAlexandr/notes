@@ -14,7 +14,7 @@ public class TestNoteDao extends TestBaseDao {
     @Test
     public void testInsertAndGetNote() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");
@@ -48,7 +48,7 @@ public class TestNoteDao extends TestBaseDao {
     @Test
     public void testUpdateNote() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section1 = new Section(user, "Some section name1");
@@ -74,7 +74,7 @@ public class TestNoteDao extends TestBaseDao {
     @Test
     public void testDeleteNote() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");
@@ -97,7 +97,7 @@ public class TestNoteDao extends TestBaseDao {
     @Test
     public void testInsertAndGetRating() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");
@@ -122,7 +122,7 @@ public class TestNoteDao extends TestBaseDao {
     @Test
     public void testDoubleInsertAndGetRating() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");

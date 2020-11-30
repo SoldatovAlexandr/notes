@@ -3,6 +3,7 @@ package net.thumbtack.school.notes.endpoint;
 import net.thumbtack.school.notes.dto.request.*;
 import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
 import net.thumbtack.school.notes.dto.response.ProfileInfoDtoResponse;
+import net.thumbtack.school.notes.dto.response.ProfileItemDtoResponse;
 import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.service.UserService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @Validated
@@ -81,11 +83,12 @@ public class UserEndpoint {
     }
 
     @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProfileInfoDtoResponse getUsers(@CookieValue(value = cookieName) String token,
-                                           @RequestParam String sortByRating,
-                                           @RequestParam String type,
-                                           @RequestParam Integer from,
-                                           @RequestParam Integer count) throws ServerException {
+    public List<? extends ProfileItemDtoResponse> getUsers(@CookieValue(value = cookieName) String token,
+                                                           @RequestParam(required = false, defaultValue = "") String sortByRating,
+                                                           @RequestParam(required = false, defaultValue = "") String type,
+                                                           @RequestParam(required = false, defaultValue = "0") int from,
+                                                           @RequestParam(required = false, defaultValue = "2147483647") Integer count
+    ) throws ServerException {
         return userService.getUsers(sortByRating, type, from, count, token);
     }
 

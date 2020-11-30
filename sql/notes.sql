@@ -12,6 +12,7 @@ CREATE TABLE user
     patronymic VARCHAR(50) DEFAULT NULL,
     deleted    BOOLEAN     DEFAULT FALSE,
     type       VARCHAR(10) DEFAULT FALSE,
+    registered DATETIME    NOT NULL,
     UNIQUE KEY (login),
     PRIMARY KEY (id)
 ) ENGINE = INNODB

@@ -22,9 +22,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -51,6 +53,9 @@ public class TestNoteService {
 
     @Captor
     ArgumentCaptor<Note> noteCaptor;
+
+    private final DateTimeFormatter dateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     @Test
     public void testInsertNote() throws ServerException {
@@ -83,7 +88,7 @@ public class TestNoteService {
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(0, "subject", "body",
-                12, 10, created.toString(), 1);
+                12, 10, created.format(dateTimeFormatter), 1);
 
         NoteVersion noteVersion = new NoteVersion(null, 1, "body");
 
@@ -176,7 +181,7 @@ public class TestNoteService {
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "body",
-                12, 10, created.toString(), 1);
+                12, 10, created.format(dateTimeFormatter), 1);
 
         NoteInfoDtoResponse response = noteService.getNoteInfo(1000, token);
 
@@ -255,7 +260,7 @@ public class TestNoteService {
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "new body",
-                12, 10, created.toString(), 2);
+                12, 10, created.format(dateTimeFormatter), 2);
 
         UpdateNoteDtoRequest request = new UpdateNoteDtoRequest("new body", null);
 
@@ -308,7 +313,7 @@ public class TestNoteService {
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "body",
-                13, 10, created.toString(), 1);
+                13, 10, created.format(dateTimeFormatter), 1);
 
         UpdateNoteDtoRequest request = new UpdateNoteDtoRequest(null, 13);
 
@@ -361,7 +366,7 @@ public class TestNoteService {
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         NoteInfoDtoResponse expectedResponse = new NoteInfoDtoResponse(1000, "subject", "new body",
-                13, 10, created.toString(), 2);
+                13, 10, created.format(dateTimeFormatter), 2);
 
         UpdateNoteDtoRequest request = new UpdateNoteDtoRequest("new body", 13);
 

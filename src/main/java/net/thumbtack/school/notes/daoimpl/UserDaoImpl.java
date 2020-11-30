@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Repository
 public class UserDaoImpl implements UserDao {
 
@@ -109,5 +112,131 @@ public class UserDaoImpl implements UserDao {
     public int deleteIgnore(int ignoreId, int ignoreById) {
         LOGGER.debug("DAO delete ignore with ignore: {}, ignoreBy: {}", ignoreId, ignoreById);
         return userMapper.deleteIgnore(ignoreId, ignoreById);
+    }
+
+    @Override
+    public List<User> getFollowings(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get followings users by user: {}", user);
+        return userMapper.getFollowings(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getFollowingsWithSortASC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get followings users by user: {}, with sort by asc", user);
+        return userMapper.getFollowingsWithSortASC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getFollowingsWithSortDESC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get followings users by user: {}, with sort by desc", user);
+        return userMapper.getFollowingsWithSortDESC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getFollowersWithSortASC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get followers users by user: {}, with sort by asc", user);
+        return userMapper.getFollowersWithSortASC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getFollowersWithSortDESC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get followers users by user: {}, with sort by desc", user);
+        return userMapper.getFollowersWithSortDESC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getFollowers(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get followers users by user: {}", user);
+        return userMapper.getFollowers(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getIgnoreByWithSortASC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get ignoreBy users by user: {}, with sort by asc", user);
+        return userMapper.getIgnoreByWithSortASC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getIgnoreByWithSortDESC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get ignoreBy users by user: {}, with sort by desc", user);
+        return userMapper.getIgnoreByWithSortDESC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getIgnoreBy(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get ignoreBy users by user: {}", user);
+        return userMapper.getIgnoreBy(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getIgnoreWithSortASC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get ignoreBy users by user: {}, with sort by asc", user);
+        return userMapper.getIgnoreWithSortASC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getIgnoreWithSortDESC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get ignoreBy users by user: {}, with sort by desc", user);
+        return userMapper.getIgnoreWithSortDESC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getIgnore(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get ignoreBy users by user: {}", user);
+        return userMapper.getIgnore(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getAllUsersWithSortASC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get all users by user: {}, with sort by asc", user);
+        return userMapper.getAllUsersWithSortASC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getAllUsersWithSortDESC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get all users by user: {}, with sort by desc", user);
+        return userMapper.getAllUsersWithSortDESC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getAllUsers(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get all users by user: {}", user);
+        return userMapper.getAllUsers(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getSuperUsersWithSortASC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get super users by user: {}, with sort by asc", user);
+        return userMapper.getSuperUsersWithSortASC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getSuperUsersWithSortDESC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get super users by user: {}, with sort by desc", user);
+        return userMapper.getSuperUsersWithSortDESC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getSuperUsers(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get super users by user: {}", user);
+        return userMapper.getSuperUsers(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getDeletedUsersWithSortASC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get deleted users by user: {}, with sort by asc", user);
+        return userMapper.getDeletedUsersWithSortASC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getDeletedUsersWithSortDESC(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get deleted users by user: {}, with sort by desc", user);
+        return userMapper.getDeletedUsersWithSortDESC(user, from, count, start);
+    }
+
+    @Override
+    public List<User> getDeletedUsers(User user, int from, int count, LocalDateTime start) {
+        LOGGER.debug("DAO get deleted users by user: {}", user);
+        return userMapper.getDeletedUsers(user, from, count, start);
     }
 }

@@ -9,6 +9,7 @@ import net.thumbtack.school.notes.dto.mappers.UserDtoMapper;
 import net.thumbtack.school.notes.dto.request.*;
 import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
 import net.thumbtack.school.notes.dto.response.ProfileInfoDtoResponse;
+import net.thumbtack.school.notes.dto.response.ProfileItemDtoResponse;
 import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
 import net.thumbtack.school.notes.erroritem.code.ServerErrorCodeWithField;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
@@ -21,6 +22,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -187,12 +192,144 @@ public class UserService extends BaseService {
         return new EmptyDtoResponse();
     }
 
-    //TODO: сделать этот метод и реализовать для него тесты
-    public ProfileInfoDtoResponse getUsers(String sortByRating, String type, Integer from, Integer count, String token) throws ServerException {
+    public List<? extends ProfileItemDtoResponse> getUsers(String sortByRating, String type, Integer from,
+                                                           Integer count, String token) throws ServerException {
         Session session = getSession(token);
 
+        User user = session.getUser();
 
-        return null;
+        checkSortByRatingParam(sortByRating);
+
+        LocalDateTime start = LocalDateTime.now().minusSeconds(config.getUserIdleTimeout());
+
+        List<User> users = getUsers(user, sortByRating, from, count, start, type);
+
+        if (user.getType().equals(UserType.SUPER_USER)) {
+            return UserDtoMapper.INSTANCE.toSuperProfilesItemDtoResponse(users);
+        }
+
+        return UserDtoMapper.INSTANCE.toProfilesItemDtoResponse(users);
+    }
+
+    private List<User> getUsers(User user, String sortByRating, int from, int count, LocalDateTime start, String type)
+            throws ServerException {
+        switch (type) {
+            case "highRating":
+                return getHighRatingUsers(user, sortByRating, from, count, start);
+            case "lowRating":
+                return getLowRatingUsers(user, sortByRating, from, count, start);
+            case "following":
+                return getFollowings(user, sortByRating, from, count, start);
+            case "followers":
+                return getFollowers(user, sortByRating, from, count, start);
+            case "ignore":
+                return getIgnore(user, sortByRating, from, count, start);
+            case "ignoreBy":
+                return getIgnoredBy(user, sortByRating, from, count, start);
+            case "deleted":
+                return getDeleted(user, sortByRating, from, count, start);
+            case "super":
+                return getSuper(user, sortByRating, from, count, start);
+            default:
+                return getAllUsers(user, sortByRating, from, count, start);
+        }
+    }
+
+    private List<User> getHighRatingUsers(User user, String sortByRatinggit, int from, int count, LocalDateTime start) {
+        return userDao.getAllUsersWithSortASC(user, from, count, start);
+    }
+
+    private List<User> getLowRatingUsers(User user, String sortByRating, int from, int count, LocalDateTime start) {
+        return userDao.getAllUsersWithSortDESC(user, from, count, start);
+    }
+
+    private List<User> getAllUsers(User user, String sortByRating, int from, int count, LocalDateTime start) {
+        switch (sortByRating) {
+            case "asc":
+                return userDao.getAllUsersWithSortASC(user, from, count, start);
+            case "desc":
+                return userDao.getAllUsersWithSortDESC(user, from, count, start);
+            default:
+                return userDao.getAllUsers(user, from, count, start);
+        }
+    }
+
+    private List<User> getSuper(User user, String sortByRating, int from, int count, LocalDateTime start)
+            throws ServerException {
+        if (!user.getType().equals(UserType.SUPER_USER)) {
+            throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
+        }
+
+        switch (sortByRating) {
+            case "asc":
+                return userDao.getSuperUsersWithSortASC(user, from, count, start);
+            case "desc":
+                return userDao.getSuperUsersWithSortDESC(user, from, count, start);
+            default:
+                return userDao.getSuperUsers(user, from, count, start);
+        }
+    }
+
+    private List<User> getDeleted(User user, String sortByRating, int from, int count, LocalDateTime start) {
+        switch (sortByRating) {
+            case "asc":
+                return userDao.getDeletedUsersWithSortASC(user, from, count, start);
+            case "desc":
+                return userDao.getDeletedUsersWithSortDESC(user, from, count, start);
+            default:
+                return userDao.getDeletedUsers(user, from, count, start);
+        }
+    }
+
+    private List<User> getIgnoredBy(User user, String sortByRating, int from, int count, LocalDateTime start) {
+        switch (sortByRating) {
+            case "asc":
+                return userDao.getIgnoreByWithSortASC(user, from, count, start);
+            case "desc":
+                return userDao.getIgnoreByWithSortDESC(user, from, count, start);
+            default:
+                return userDao.getIgnoreBy(user, from, count, start);
+        }
+    }
+
+    private List<User> getIgnore(User user, String sortByRating, int from, int count, LocalDateTime start) {
+        switch (sortByRating) {
+            case "asc":
+                return userDao.getIgnoreWithSortASC(user, from, count, start);
+            case "desc":
+                return userDao.getIgnoreWithSortDESC(user, from, count, start);
+            default:
+                return userDao.getIgnore(user, from, count, start);
+        }
+    }
+
+    private List<User> getFollowers(User user, String sortByRating, Integer from, Integer count, LocalDateTime start) {
+        switch (sortByRating) {
+            case "asc":
+                return userDao.getFollowersWithSortASC(user, from, count, start);
+            case "desc":
+                return userDao.getFollowersWithSortDESC(user, from, count, start);
+            default:
+                return userDao.getFollowers(user, from, count, start);
+        }
+    }
+
+
+    private List<User> getFollowings(User user, String sortByRating, Integer from, Integer count, LocalDateTime start) {
+        switch (sortByRating) {
+            case "asc":
+                return userDao.getFollowingsWithSortASC(user, from, count, start);
+            case "desc":
+                return userDao.getFollowingsWithSortDESC(user, from, count, start);
+            default:
+                return userDao.getFollowings(user, from, count, start);
+        }
+    }
+
+    private void checkSortByRatingParam(String sortByRating) throws ServerException {
+        if (!(sortByRating.isEmpty() || sortByRating.equals("asc") || sortByRating.equals("desc"))) {
+            throw new ServerException(ServerErrorCodeWithField.WRONG_SORT_BY_RATING);
+        }
     }
 
     private void deleteIgnore(int ignoreId, int ignoreById) throws ServerException {

@@ -14,7 +14,7 @@ public class TestCommentDao extends TestBaseDao {
     @Test
     public void testInsertAndGetComment() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");
@@ -44,8 +44,8 @@ public class TestCommentDao extends TestBaseDao {
 
     @Test
     public void testUpdateAndGetComment() {
-        User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+        User user = new User("login", "password", "firstName",
+                "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");
@@ -79,7 +79,7 @@ public class TestCommentDao extends TestBaseDao {
     @Test
     public void testDeleteComment() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");
@@ -111,7 +111,7 @@ public class TestCommentDao extends TestBaseDao {
     @Test
     public void testDeleteCommentsByNote() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");

@@ -17,6 +17,8 @@ public class Config {
     private int minPasswordLength;
     @Value("${user_idle_timeout}")
     private int userIdleTimeout;
+    @Value("${date_time_pattern}")
+    private String pattern;
 
     public int getMaxNameLength() {
         return maxNameLength;
@@ -28,5 +30,9 @@ public class Config {
 
     public int getUserIdleTimeout() {
         return userIdleTimeout;
+    }
+
+    public String getPattern() {
+        return pattern;
     }
 }

@@ -17,7 +17,7 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testInsertAndGetUserByLogin() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         User userFromDb = userDao.getByLogin(user.getLogin());
@@ -28,7 +28,7 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testInsertAndGetUserById() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         User userFromDb = userDao.getById(user.getId());
@@ -39,7 +39,7 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testUpdateAndGetUserById() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         user.setFirstName("newFirstName");
@@ -57,7 +57,7 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testSetDeletedUser() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         userDao.setDeletedUser(user);
@@ -70,7 +70,7 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testSetUserType() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         user.setType(UserType.SUPER_USER);
@@ -86,7 +86,7 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testInsertAndGetSession() {
         User user = new User("login", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         String token = UUID.randomUUID().toString();
@@ -103,7 +103,7 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testInsertAndUpdateSession() {
         User user = new User("login", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         String token = UUID.randomUUID().toString();
@@ -133,7 +133,7 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testInsertAndDeleteSessionByToken() {
         User user = new User("login", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         String token = UUID.randomUUID().toString();
@@ -152,7 +152,7 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testInsertAndDeleteSessionByUser() {
         User user = new User("login", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         String token = UUID.randomUUID().toString();
@@ -172,9 +172,9 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testInsertFollowing() {
         User user1 = new User("login1", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         User user2 = new User("login2", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user1);
         userDao.insert(user2);
 
@@ -194,9 +194,9 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testInsertIgnore() {
         User user1 = new User("login1", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         User user2 = new User("login2", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user1);
         userDao.insert(user2);
 
@@ -216,9 +216,9 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testDeleteFollowing() {
         User user1 = new User("login1", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         User user2 = new User("login2", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user1);
         userDao.insert(user2);
 
@@ -238,9 +238,9 @@ public class TestUserDao extends TestBaseDao {
     @Test
     public void testDeleteIgnore() {
         User user1 = new User("login1", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         User user2 = new User("login2", "password",
-                "first", "lastName", "patronymic");
+                "first", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user1);
         userDao.insert(user2);
 

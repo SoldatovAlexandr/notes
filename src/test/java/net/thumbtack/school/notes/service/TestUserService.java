@@ -67,7 +67,7 @@ public class TestUserService {
         HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
 
         User user = new User("login", "password", "firstName", "lastName",
-                "patronymic");
+                "patronymic", LocalDateTime.now());
 
         RegisterUserDtoRequest request = new RegisterUserDtoRequest("firstName", "lastName",
                 "patronymic", "login", "password");
@@ -201,7 +201,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User user = new User("login", "password", "firstName", "lastName",
-                "patronymic");
+                "patronymic",LocalDateTime.now());
 
         when(session.getUser()).thenReturn(user);
 
@@ -228,7 +228,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User user = new User("login", "password", "firstName", "lastName",
-                "patronymic");
+                "patronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(user);
 
@@ -266,7 +266,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User user = new User("login", "password", "firstName", "lastName",
-                "patronymic");
+                "patronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(user);
 
@@ -282,7 +282,7 @@ public class TestUserService {
     }
 
     @Test
-    public void testGetProfileInfoFail3() throws ServerException {
+    public void testGetProfileInfoFail3() {
         UserService userService = new UserService(userDao, sectionDao, noteDao, commentDao, config);
 
         String token = "some-token";
@@ -293,7 +293,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User user = new User("login", "password", "firstName", "lastName",
-                "patronymic");
+                "patronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(user);
 
@@ -319,7 +319,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User user = new User("login", "password", "firstName", "lastName",
-                "patronymic");
+                "patronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(user);
 
@@ -348,7 +348,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User user = new User("login", "password", "firstName", "lastName",
-                "patronymic");
+                "patronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(user);
 
@@ -388,7 +388,7 @@ public class TestUserService {
                 "lastName", "patronymic", "login");
 
         User user = new User("login", "oldPassword", "oldFirstName", "oldLastName",
-                "oldPatronymic");
+                "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(user);
 
@@ -418,7 +418,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User user = new User("login", "oldPassword", "oldFirstName", "oldLastName",
-                "oldPatronymic");
+                "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(user);
 
@@ -462,12 +462,12 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User author = new User("login1", "oldPassword", "oldFirstName", "oldLastName",
-                "oldPatronymic");
+                "oldPatronymic", LocalDateTime.now());
 
         author.setType(UserType.SUPER_USER);
 
         User user = new User("login2", "oldPassword", "oldFirstName", "oldLastName",
-                "oldPatronymic");
+                "oldPatronymic", LocalDateTime.now());
 
         when(config.getUserIdleTimeout()).thenReturn(3600);
 
@@ -498,7 +498,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User author = new User("login1", "oldPassword", "oldFirstName", "oldLastName",
-                "oldPatronymic");
+                "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(author);
 
@@ -537,7 +537,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User author = new User("login1", "oldPassword", "oldFirstName", "oldLastName",
-                "oldPatronymic");
+                "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(author);
 
@@ -563,9 +563,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User follower = new User("follower", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User following = new User("following", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         follower.setId(10);
 
@@ -612,7 +612,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User follower = new User("follower", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         FollowingDtoRequest request = new FollowingDtoRequest("following");
 
@@ -638,9 +638,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User follower = new User("follower", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User following = new User("following", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(follower);
 
@@ -668,9 +668,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User follower = new User("follower", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User following = new User("following", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         follower.setId(10);
         following.setId(100);
@@ -703,9 +703,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User ignoreBy = new User("ignoreBy", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User ignore = new User("ignore", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         ignoreBy.setId(10);
         ignore.setId(100);
@@ -751,7 +751,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User ignoreBy = new User("ignoreBy", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         IgnoreDtoRequest request = new IgnoreDtoRequest("ignore");
 
@@ -777,9 +777,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User ignoreBy = new User("ignoreBy", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User ignore = new User("ignore", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(ignoreBy);
 
@@ -807,9 +807,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User ignoreBy = new User("ignoreBy", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User ignore = new User("ignore", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         ignoreBy.setId(10);
         ignore.setId(100);
@@ -842,9 +842,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User follower = new User("follower", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User following = new User("following", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         follower.setId(10);
         following.setId(100);
@@ -888,7 +888,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User follower = new User("follower", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(follower);
 
@@ -912,9 +912,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User follower = new User("follower", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User following = new User("following", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(follower);
 
@@ -940,9 +940,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User ignoreBy = new User("ignoreBy", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User ignore = new User("ignore", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         ignoreBy.setId(10);
         ignore.setId(100);
@@ -986,7 +986,7 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User ignoreBy = new User("ignoreBy", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(ignoreBy);
 
@@ -1010,9 +1010,9 @@ public class TestUserService {
         Session session = Mockito.mock(Session.class);
 
         User ignoreBy = new User("ignoreBy", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
         User ignore = new User("ignore", "oldPassword", "oldFirstName",
-                "oldLastName", "oldPatronymic");
+                "oldLastName", "oldPatronymic", LocalDateTime.now());
 
         when(session.getUser()).thenReturn(ignoreBy);
 

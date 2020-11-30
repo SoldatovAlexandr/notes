@@ -1,8 +1,6 @@
 package net.thumbtack.school.notes.erroritem.code;
 
 public enum ServerErrorCode {
-    PASSWORDS_DO_MATCH("passwords must not math"),
-
     FIRST_NAME_NOT_SET("first name must be set"),
     LAST_NAME_NOT_SET("last name must be set"),
     LOGIN_NOT_SET("login must be set"),

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,12 @@ public class User {
     private boolean deleted;
     private UserType type;
     @EqualsAndHashCode.Exclude
+    private float userRating;
+    @EqualsAndHashCode.Exclude
+    private boolean online;
+    @EqualsAndHashCode.Exclude
+    private LocalDateTime registered;
+    @EqualsAndHashCode.Exclude
     private List<User> followers;
     @EqualsAndHashCode.Exclude
     private List<User> followings;
@@ -30,13 +37,14 @@ public class User {
     private List<User> ignoredBy;
 
     public User(String login, String password, String firstName,
-                String lastName, String patronymic, UserType type) {
+                String lastName, String patronymic, UserType type, LocalDateTime registered) {
         this.login = login;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.patronymic = patronymic;
         this.type = type;
+        this.registered = registered;
         this.followers = new ArrayList<>();
         this.followings = new ArrayList<>();
         this.ignore = new ArrayList<>();
@@ -44,11 +52,11 @@ public class User {
     }
 
     public User(String login, String password, String firstName,
-                String lastName, String patronymic) {
-        this(login, password, firstName, lastName, patronymic, UserType.USER);
+                String lastName, String patronymic, LocalDateTime registered) {
+        this(login, password, firstName, lastName, patronymic, UserType.USER, registered);
     }
 
     public User(String password, String firstName, String lastName, String patronymic) {
-        this(null, password, firstName, lastName, patronymic);
+        this(null, password, firstName, lastName, patronymic, null);
     }
 }

@@ -15,7 +15,7 @@ public class TestSectionDao extends TestBaseDao {
     @Test
     public void testInsertAndGetSection() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");
@@ -30,7 +30,7 @@ public class TestSectionDao extends TestBaseDao {
     @Test
     public void testInsertAndUpdateSection() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");
@@ -49,7 +49,7 @@ public class TestSectionDao extends TestBaseDao {
     @Test
     public void testInsertAndDeleteSection() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
         userDao.insert(user);
 
         Section section = new Section(user, "Some section name");
@@ -66,7 +66,7 @@ public class TestSectionDao extends TestBaseDao {
     @Test
     public void testInsertAndGetAllSections() {
         User user = new User("login", "password",
-                "firstName", "lastName", "patronymic");
+                "firstName", "lastName", "patronymic", getCurrentDateTime());
 
         userDao.insert(user);
 

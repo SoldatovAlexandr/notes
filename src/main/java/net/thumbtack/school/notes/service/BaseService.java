@@ -17,6 +17,8 @@ import java.time.temporal.ChronoUnit;
 
 @Service
 @Transactional(rollbackFor = {NestedRuntimeException.class, ServerException.class})
+// REVU я бы назвал ServiceBase. Это не сервис, а базовый класс для сервисов
+// сейчас у меня есть желание выяснить, что это за базовый сервис и для чего он :-)
 public class BaseService {
     protected final UserDao userDao;
     protected final SectionDao sectionDao;
@@ -24,6 +26,7 @@ public class BaseService {
     protected final CommentDao commentDao;
     protected final Config config;
 
+    // REVU protected final static String COOKIE_NAME = "JAVASESSIONID";
     protected final String cookieName = "JAVASESSIONID";
 
 

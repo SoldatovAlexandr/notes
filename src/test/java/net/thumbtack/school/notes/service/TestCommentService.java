@@ -49,6 +49,15 @@ public class TestCommentService {
     @Captor
     ArgumentCaptor<Comment> commentCaptor;
 
+    // REVU мне не нравится в этих тестах наличие каких-то числовых констант непонятного происхождения
+    // when(user.getId()).thenReturn(10);
+    // что такое 10 ?
+    //  CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(0, "body", 24,
+    // 10, 2, created.toString());
+    // что такое 24, 10 и 2 ?
+    // это id, которые должна ставить БД, но поскольку тут моки, то значение ставим сами ?
+    // тогда - private static final int ИМЯ = 24;
+    // да и "body" можно так же оформить
     @Test
     public void testCreateComment() throws ServerException {
         CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);

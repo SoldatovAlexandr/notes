@@ -7,7 +7,7 @@ import net.thumbtack.school.notes.dto.response.ProfileItemDtoResponse;
 import net.thumbtack.school.notes.dto.response.SuperProfileItemDtoResponse;
 import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
 import net.thumbtack.school.notes.model.User;
-import net.thumbtack.school.notes.model.UserType;
+import net.thumbtack.school.notes.views.UserView;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
@@ -71,15 +71,15 @@ public class UserDtoMapper {
         );
     }
 
-    public List<ProfileItemDtoResponse> toProfilesItemDtoResponse(List<User> users) {
+    public List<ProfileItemDtoResponse> toProfilesItemDtoResponse(List<UserView> users) {
         List<ProfileItemDtoResponse> response = new ArrayList<>();
-        for (User user : users) {
+        for (UserView user : users) {
             response.add(toProfileItemDtoResponse(user));
         }
         return response;
     }
 
-    private ProfileItemDtoResponse toProfileItemDtoResponse(User user) {
+    private ProfileItemDtoResponse toProfileItemDtoResponse(UserView user) {
         return new ProfileItemDtoResponse(
                 user.getId(),
                 user.getFirstName(),
@@ -93,15 +93,15 @@ public class UserDtoMapper {
         );
     }
 
-    public List<SuperProfileItemDtoResponse> toSuperProfilesItemDtoResponse(List<User> users) {
+    public List<SuperProfileItemDtoResponse> toSuperProfilesItemDtoResponse(List<UserView> users) {
         List<SuperProfileItemDtoResponse> response = new ArrayList<>();
-        for (User user : users) {
+        for (UserView user : users) {
             response.add(toSuperProfileItemDtoResponse(user));
         }
         return response;
     }
 
-    private SuperProfileItemDtoResponse toSuperProfileItemDtoResponse(User user) {
+    private SuperProfileItemDtoResponse toSuperProfileItemDtoResponse(UserView user) {
         return new SuperProfileItemDtoResponse(
                 user.getId(),
                 user.getFirstName(),
@@ -112,7 +112,7 @@ public class UserDtoMapper {
                 user.isOnline(),
                 user.isDeleted(),
                 user.getUserRating(),
-                user.getType().equals(UserType.SUPER_USER)
+                user.isSuper()
         );
     }
 }

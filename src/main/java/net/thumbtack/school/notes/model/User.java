@@ -22,11 +22,6 @@ public class User {
     private boolean deleted;
     private UserType type;
     @EqualsAndHashCode.Exclude
-    private float userRating;
-    @EqualsAndHashCode.Exclude
-    // REVU не нужно. Есть же Session
-    private boolean online;
-    @EqualsAndHashCode.Exclude
     private LocalDateTime registered;
     @EqualsAndHashCode.Exclude
     private List<User> followers;

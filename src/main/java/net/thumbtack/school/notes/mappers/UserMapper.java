@@ -2,6 +2,7 @@ package net.thumbtack.school.notes.mappers;
 
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
+import net.thumbtack.school.notes.views.UserView;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.mapping.FetchType;
 import org.springframework.stereotype.Component;
@@ -181,7 +182,7 @@ public interface UserMapper {
 
     @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
             "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
             "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
             "FROM user " +
             "LEFT JOIN note ON note.user_id = user.id " +
@@ -189,12 +190,12 @@ public interface UserMapper {
             "LEFT JOIN session ON user.id = session.user_id " +
             "WHERE user.id IN (SELECT following_id FROM following WHERE follower_id=#{user.id}) " +
             "GROUP BY user.id LIMIT #{count} OFFSET #{from}")
-    List<User> getFollowings(@Param("user") User user, @Param("from") Integer from,
-                             @Param("count") Integer count, @Param("start") LocalDateTime start);
+    List<UserView> getFollowings(@Param("user") User user, @Param("from") Integer from,
+                                 @Param("count") Integer count, @Param("start") LocalDateTime start);
 
     @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
             "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
             "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
             "FROM user " +
             "LEFT JOIN note ON note.user_id = user.id " +
@@ -202,12 +203,12 @@ public interface UserMapper {
             "LEFT JOIN session ON user.id = session.user_id " +
             "WHERE user.id IN (SELECT following_id FROM following WHERE follower_id=#{user.id}) " +
             "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
-    List<User> getFollowingsWithSortASC(@Param("user") User user, @Param("from") Integer from,
-                                        @Param("count") Integer count, @Param("start") LocalDateTime start);
+    List<UserView> getFollowingsWithSortASC(@Param("user") User user, @Param("from") Integer from,
+                                            @Param("count") Integer count, @Param("start") LocalDateTime start);
 
     @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
             "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
             "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
             "FROM user " +
             "LEFT JOIN note ON note.user_id = user.id " +
@@ -215,12 +216,12 @@ public interface UserMapper {
             "LEFT JOIN session ON user.id = session.user_id " +
             "WHERE user.id IN (SELECT following_id FROM following WHERE follower_id=#{user.id}) " +
             "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
-    List<User> getFollowingsWithSortDESC(@Param("user") User user, @Param("from") Integer from,
-                                         @Param("count") Integer count, @Param("start") LocalDateTime start);
+    List<UserView> getFollowingsWithSortDESC(@Param("user") User user, @Param("from") Integer from,
+                                             @Param("count") Integer count, @Param("start") LocalDateTime start);
 
     @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
             "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
             "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
             "FROM user " +
             "LEFT JOIN note ON note.user_id = user.id " +
@@ -228,220 +229,220 @@ public interface UserMapper {
             "LEFT JOIN session ON user.id = session.user_id " +
             "WHERE user.id IN (SELECT follower_id FROM following WHERE following_id=#{user.id}) " +
             "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
-    List<User> getFollowersWithSortASC(@Param("user") User user, @Param("from") Integer from,
-                                       @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.id IN (SELECT follower_id FROM following WHERE following_id=#{user.id}) " +
-            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
-    List<User> getFollowersWithSortDESC(@Param("user") User user, @Param("from") Integer from,
-                                        @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.id IN (SELECT follower_id FROM following WHERE following_id=#{user.id}) " +
-            "GROUP BY user.id LIMIT #{count} OFFSET #{from}")
-    List<User> getFollowers(@Param("user") User user, @Param("from") Integer from,
-                            @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.id IN (SELECT ignore_by_id FROM ignoring WHERE ignore_id=#{user.id}) " +
-            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
-    List<User> getIgnoreByWithSortASC(@Param("user") User user, @Param("from") Integer from,
-                                      @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.id IN (SELECT ignore_by_id FROM ignoring WHERE ignore_id=#{user.id}) " +
-            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
-    List<User> getIgnoreByWithSortDESC(@Param("user") User user, @Param("from") Integer from,
-                                       @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.id IN (SELECT ignore_by_id FROM ignoring WHERE ignore_id=#{user.id}) " +
-            "GROUP BY user.id LIMIT #{count} OFFSET #{from}")
-    List<User> getIgnoreBy(@Param("user") User user, @Param("from") Integer from,
-                           @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.id IN (SELECT ignore_id FROM ignoring WHERE ignore_by_id=#{user.id}) " +
-            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
-    List<User> getIgnoreWithSortASC(@Param("user") User user, @Param("from") Integer from,
-                                    @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.id IN (SELECT ignore_id FROM ignoring WHERE ignore_by_id=#{user.id}) " +
-            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
-    List<User> getIgnoreWithSortDESC(@Param("user") User user, @Param("from") Integer from,
-                                     @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.id IN (SELECT ignore_id FROM ignoring WHERE ignore_by_id=#{user.id}) " +
-            "GROUP BY user.id LIMIT #{count} OFFSET #{from}")
-    List<User> getIgnore(@Param("user") User user, @Param("from") Integer from,
-                         @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
-    List<User> getAllUsersWithSortASC(@Param("user") User user, @Param("from") Integer from,
-                                      @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
-    List<User> getAllUsersWithSortDESC(@Param("user") User user, @Param("from") Integer from,
-                                       @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "GROUP BY user.id  LIMIT #{count} OFFSET #{from}")
-    List<User> getAllUsers(@Param("user") User user, @Param("from") Integer from,
-                           @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.type='SUPER_USER' " +
-            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
-    List<User> getSuperUsersWithSortASC(@Param("user") User user, @Param("from") Integer from,
-                                        @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.type='SUPER_USER' " +
-            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
-    List<User> getSuperUsersWithSortDESC(@Param("user") User user, @Param("from") Integer from,
-                                         @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.type='SUPER_USER' " +
-            "GROUP BY user.id  LIMIT #{count} OFFSET #{from}")
-    List<User> getSuperUsers(@Param("user") User user, @Param("from") Integer from,
-                             @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.deleted = true " +
-            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
-    List<User> getDeletedUsersWithSortASC(@Param("user") User user, @Param("from") Integer from,
-                                          @Param("count") Integer count, @Param("start") LocalDateTime start);
-
-    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
-            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
-            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
-            "FROM user " +
-            "LEFT JOIN note ON note.user_id = user.id " +
-            "LEFT JOIN rating ON note.id = rating.note_id " +
-            "LEFT JOIN session ON user.id = session.user_id " +
-            "WHERE user.deleted = true " +
-            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
-    List<User> getDeletedUsersWithSortDESC(@Param("user") User user, @Param("from") Integer from,
+    List<UserView> getFollowersWithSortASC(@Param("user") User user, @Param("from") Integer from,
                                            @Param("count") Integer count, @Param("start") LocalDateTime start);
 
     @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
             "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
-            "user.type AS type, AVG(rating.number) AS userRating, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.id IN (SELECT follower_id FROM following WHERE following_id=#{user.id}) " +
+            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getFollowersWithSortDESC(@Param("user") User user, @Param("from") Integer from,
+                                            @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.id IN (SELECT follower_id FROM following WHERE following_id=#{user.id}) " +
+            "GROUP BY user.id LIMIT #{count} OFFSET #{from}")
+    List<UserView> getFollowers(@Param("user") User user, @Param("from") Integer from,
+                                @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.id IN (SELECT ignore_by_id FROM ignoring WHERE ignore_id=#{user.id}) " +
+            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getIgnoreByWithSortASC(@Param("user") User user, @Param("from") Integer from,
+                                          @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.id IN (SELECT ignore_by_id FROM ignoring WHERE ignore_id=#{user.id}) " +
+            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getIgnoreByWithSortDESC(@Param("user") User user, @Param("from") Integer from,
+                                           @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.id IN (SELECT ignore_by_id FROM ignoring WHERE ignore_id=#{user.id}) " +
+            "GROUP BY user.id LIMIT #{count} OFFSET #{from}")
+    List<UserView> getIgnoreBy(@Param("user") User user, @Param("from") Integer from,
+                               @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.id IN (SELECT ignore_id FROM ignoring WHERE ignore_by_id=#{user.id}) " +
+            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getIgnoreWithSortASC(@Param("user") User user, @Param("from") Integer from,
+                                        @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.id IN (SELECT ignore_id FROM ignoring WHERE ignore_by_id=#{user.id}) " +
+            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getIgnoreWithSortDESC(@Param("user") User user, @Param("from") Integer from,
+                                         @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.id IN (SELECT ignore_id FROM ignoring WHERE ignore_by_id=#{user.id}) " +
+            "GROUP BY user.id LIMIT #{count} OFFSET #{from}")
+    List<UserView> getIgnore(@Param("user") User user, @Param("from") Integer from,
+                             @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getAllUsersWithSortASC(@Param("user") User user, @Param("from") Integer from,
+                                          @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getAllUsersWithSortDESC(@Param("user") User user, @Param("from") Integer from,
+                                           @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "GROUP BY user.id  LIMIT #{count} OFFSET #{from}")
+    List<UserView> getAllUsers(@Param("user") User user, @Param("from") Integer from,
+                               @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.type='SUPER_USER' " +
+            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getSuperUsersWithSortASC(@Param("user") User user, @Param("from") Integer from,
+                                            @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.type='SUPER_USER' " +
+            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getSuperUsersWithSortDESC(@Param("user") User user, @Param("from") Integer from,
+                                             @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.type='SUPER_USER' " +
+            "GROUP BY user.id  LIMIT #{count} OFFSET #{from}")
+    List<UserView> getSuperUsers(@Param("user") User user, @Param("from") Integer from,
+                                 @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.deleted = true " +
+            "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getDeletedUsersWithSortASC(@Param("user") User user, @Param("from") Integer from,
+                                              @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
+            "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
+            "FROM user " +
+            "LEFT JOIN note ON note.user_id = user.id " +
+            "LEFT JOIN rating ON note.id = rating.note_id " +
+            "LEFT JOIN session ON user.id = session.user_id " +
+            "WHERE user.deleted = true " +
+            "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
+    List<UserView> getDeletedUsersWithSortDESC(@Param("user") User user, @Param("from") Integer from,
+                                               @Param("count") Integer count, @Param("start") LocalDateTime start);
+
+    @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
+            "user.patronymic AS patronymic, user.deleted AS deleted, user.registered AS registered, " +
+            "(user.type ='SUPER_USER') AS isSuper, AVG(rating.number) AS userRating, " +
             "last_action between #{start} AND CURRENT_TIMESTAMP() AS online " +
             "FROM user " +
             "LEFT JOIN note ON note.user_id = user.id " +
@@ -449,7 +450,7 @@ public interface UserMapper {
             "LEFT JOIN session ON user.id = session.user_id " +
             "WHERE user.deleted = true  " +
             "GROUP BY user.id  LIMIT #{count} OFFSET #{from}")
-    List<User> getDeletedUsers(@Param("user") User user, @Param("from") Integer from,
-                               @Param("count") Integer count, @Param("start") LocalDateTime start);
+    List<UserView> getDeletedUsers(@Param("user") User user, @Param("from") Integer from,
+                                   @Param("count") Integer count, @Param("start") LocalDateTime start);
 }
 

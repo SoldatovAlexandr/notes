@@ -15,6 +15,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class TestDebugService {
+
+    private static final int MAX_NAME_LENGTH = 50;
+    private static final int MIN_PASSWORD_LENGTH = 10;
+    private static final int IDLE_TIMEOUT = 1000;
+
     @MockBean
     private UserDao userDao;
 
@@ -38,14 +43,13 @@ public class TestDebugService {
     public void testGetServerSettings() {
         DebugService debugService = new DebugService(userDao, sectionDao, noteDao, commentDao, config, commonDao);
 
-        when(config.getMaxNameLength()).thenReturn(50);
+        when(config.getMaxNameLength()).thenReturn(MAX_NAME_LENGTH);
 
-        when(config.getMinPasswordLength()).thenReturn(10);
+        when(config.getMinPasswordLength()).thenReturn(MIN_PASSWORD_LENGTH);
 
-        when(config.getUserIdleTimeout()).thenReturn(1000);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
-        SettingsDtoResponse expectedResponse = new SettingsDtoResponse(50, 10,
-                1000);
+        SettingsDtoResponse expectedResponse = new SettingsDtoResponse(MAX_NAME_LENGTH, MIN_PASSWORD_LENGTH, IDLE_TIMEOUT);
 
         SettingsDtoResponse response = debugService.getServerSettings();
 

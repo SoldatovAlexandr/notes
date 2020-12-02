@@ -1,6 +1,5 @@
 package net.thumbtack.school.notes.mappers;
 
-import net.thumbtack.school.notes.model.Note;
 import net.thumbtack.school.notes.model.Section;
 import net.thumbtack.school.notes.model.User;
 import org.apache.ibatis.annotations.*;

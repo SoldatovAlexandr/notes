@@ -31,33 +31,33 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 public class TestCommentService {
 
+
+    private static final int USER_ID = 10;
+    private static final int ANOTHER_USER_ID = 100;
+    private static final int NOTE_ID = 24;
+    private static final int NEW_COMMENT_ID = 0;
+    private static final int COMMENT_ID = 44;
+    private static final int FIRST_NOTE_VERSION = 1;
+    private static final int SECOND_NOTE_VERSION = 2;
+    private static final int THIRD_NOTE_VERSION = 3;
+    private static final int IDLE_TIMEOUT = 3600;
+
+    private static final String TOKEN = "some-token";
+    private static final String BODY = "body";
+    private static final String NEW_BODY = "new body";
+    @Captor
+    ArgumentCaptor<Comment> commentCaptor;
     @MockBean
     private UserDao userDao;
-
     @MockBean
     private CommentDao commentDao;
-
     @MockBean
     private NoteDao noteDao;
-
     @MockBean
     private Config config;
-
     @MockBean
     private SectionDao sectionDao;
 
-    @Captor
-    ArgumentCaptor<Comment> commentCaptor;
-
-    // REVU мне не нравится в этих тестах наличие каких-то числовых констант непонятного происхождения
-    // when(user.getId()).thenReturn(10);
-    // что такое 10 ?
-    //  CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(0, "body", 24,
-    // 10, 2, created.toString());
-    // что такое 24, 10 и 2 ?
-    // это id, которые должна ставить БД, но поскольку тут моки, то значение ставим сами ?
-    // тогда - private static final int ИМЯ = 24;
-    // да и "body" можно так же оформить
     @Test
     public void testCreateComment() throws ServerException {
         CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
@@ -72,32 +72,32 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(24)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
         when(note.getCurrentVersion()).thenReturn(noteVersion);
 
-        when(noteVersion.getRevisionId()).thenReturn(2);
+        when(noteVersion.getRevisionId()).thenReturn(SECOND_NOTE_VERSION);
 
-        when(note.getId()).thenReturn(24);
+        when(note.getId()).thenReturn(NOTE_ID);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
-        CreateCommentDtoRequest request = new CreateCommentDtoRequest("body", 24);
+        CreateCommentDtoRequest request = new CreateCommentDtoRequest(BODY, NOTE_ID);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Comment comment = new Comment(0, "body", note, user, 2, created);
+        Comment comment = new Comment(NEW_COMMENT_ID, BODY, note, user, SECOND_NOTE_VERSION, created);
 
-        CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(0, "body", 24,
-                10, 2, created.toString());
+        CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(NEW_COMMENT_ID, BODY, NOTE_ID,
+                USER_ID, SECOND_NOTE_VERSION, created.toString());
 
-        CommentInfoDtoResponse response = commentService.createComment(request, "some-token");
+        CommentInfoDtoResponse response = commentService.createComment(request, TOKEN);
 
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expectedResponse, response),
@@ -109,10 +109,10 @@ public class TestCommentService {
     public void testCreateCommentFail1() {
         CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
-        CreateCommentDtoRequest request = new CreateCommentDtoRequest("body", 24);
+        CreateCommentDtoRequest request = new CreateCommentDtoRequest(BODY, NOTE_ID);
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.createComment(request, "some-token")
+                ServerException.class, () -> commentService.createComment(request, TOKEN)
         );
     }
 
@@ -126,18 +126,18 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
-        CreateCommentDtoRequest request = new CreateCommentDtoRequest("body", 24);
+        CreateCommentDtoRequest request = new CreateCommentDtoRequest(BODY, NOTE_ID);
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.createComment(request, "some-token")
+                ServerException.class, () -> commentService.createComment(request, TOKEN)
         );
     }
 
@@ -159,44 +159,48 @@ public class TestCommentService {
 
         User author14 = Mockito.mock(User.class);
 
-        when(author11.getId()).thenReturn(11);
+        int userId11 = 11;
 
-        when(author14.getId()).thenReturn(14);
+        int userId14 = 14;
 
-        comments.add(new Comment(1, "body", note, user, 2, created));
-        comments.add(new Comment(2, "body", note, author11, 3, created));
-        comments.add(new Comment(3, "body", note, author14, 1, created));
+        when(author11.getId()).thenReturn(userId11);
+
+        when(author14.getId()).thenReturn(userId14);
+
+        comments.add(new Comment(1, BODY, note, user, SECOND_NOTE_VERSION, created));
+        comments.add(new Comment(2, BODY, note, author11, THIRD_NOTE_VERSION, created));
+        comments.add(new Comment(3, BODY, note, author14, FIRST_NOTE_VERSION, created));
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(12)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
-        when(note.getId()).thenReturn(12);
+        when(note.getId()).thenReturn(NOTE_ID);
 
         when(note.getComments()).thenReturn(comments);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         List<CommentInfoDtoResponse> expectedResponse = new ArrayList<>();
 
-        expectedResponse.add(new CommentInfoDtoResponse(1, "body", 12,
-                10, 2, created.toString()));
-        expectedResponse.add(new CommentInfoDtoResponse(2, "body", 12,
-                11, 3, created.toString()));
-        expectedResponse.add(new CommentInfoDtoResponse(3, "body", 12,
-                14, 1, created.toString()));
+        expectedResponse.add(new CommentInfoDtoResponse(1, BODY, NOTE_ID, USER_ID, SECOND_NOTE_VERSION,
+                created.toString()));
+        expectedResponse.add(new CommentInfoDtoResponse(2, BODY, NOTE_ID, userId11, THIRD_NOTE_VERSION,
+                created.toString()));
+        expectedResponse.add(new CommentInfoDtoResponse(3, BODY, NOTE_ID, userId14, FIRST_NOTE_VERSION,
+                created.toString()));
 
-        List<CommentInfoDtoResponse> response = commentService.getComments(12, "some-token");
+        List<CommentInfoDtoResponse> response = commentService.getComments(NOTE_ID, TOKEN);
 
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expectedResponse, response),
-                () -> verify(noteDao).getNoteById(12)
+                () -> verify(noteDao).getNoteById(NOTE_ID)
         );
     }
 
@@ -205,7 +209,7 @@ public class TestCommentService {
         CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.getComments(12, "some-token")
+                ServerException.class, () -> commentService.getComments(NOTE_ID, TOKEN)
         );
     }
 
@@ -219,16 +223,16 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.getComments(12, "some-token")
+                ServerException.class, () -> commentService.getComments(NOTE_ID, TOKEN)
         );
     }
 
@@ -242,7 +246,7 @@ public class TestCommentService {
 
         User user = Mockito.mock(User.class);
 
-        Comment comment = new Comment(44, "body", note, user, 2, created);
+        Comment comment = new Comment(COMMENT_ID, BODY, note, user, SECOND_NOTE_VERSION, created);
 
         NoteVersion noteVersion = Mockito.mock(NoteVersion.class);
 
@@ -250,35 +254,35 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(12)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
-        when(commentDao.getCommentById(44)).thenReturn(comment);
+        when(commentDao.getCommentById(COMMENT_ID)).thenReturn(comment);
 
         when(note.getCurrentVersion()).thenReturn(noteVersion);
 
-        when(noteVersion.getRevisionId()).thenReturn(2);
+        when(noteVersion.getRevisionId()).thenReturn(SECOND_NOTE_VERSION);
 
-        when(note.getId()).thenReturn(12);
+        when(note.getId()).thenReturn(NOTE_ID);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
-        CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(44, "new body", 12, 10,
-                2, created.toString());
+        CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(COMMENT_ID, NEW_BODY, NOTE_ID, USER_ID,
+                SECOND_NOTE_VERSION, created.toString());
 
-        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest("new body");
+        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest(NEW_BODY);
 
-        CommentInfoDtoResponse response = commentService.updateComment(request, 44, "some-token");
+        CommentInfoDtoResponse response = commentService.updateComment(request, COMMENT_ID, TOKEN);
 
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expectedResponse, response),
                 () -> verify(commentDao).updateComment(commentCaptor.capture()),
-                () -> Assertions.assertEquals("new body", commentCaptor.getValue().getBody())
+                () -> Assertions.assertEquals(NEW_BODY, commentCaptor.getValue().getBody())
         );
     }
 
@@ -286,10 +290,10 @@ public class TestCommentService {
     public void testUpdateCommentFail1() {
         CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
-        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest("new body");
+        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest(NEW_BODY);
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.updateComment(request, 44, "some-token")
+                ServerException.class, () -> commentService.updateComment(request, COMMENT_ID, TOKEN)
         );
     }
 
@@ -297,7 +301,7 @@ public class TestCommentService {
     public void testUpdateCommentFail2() {
         CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
-        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest("new body");
+        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest(NEW_BODY);
 
         Session session = Mockito.mock(Session.class);
 
@@ -305,16 +309,16 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.updateComment(request, 44, "some-token")
+                ServerException.class, () -> commentService.updateComment(request, COMMENT_ID, TOKEN)
         );
     }
 
@@ -322,7 +326,7 @@ public class TestCommentService {
     public void testUpdateCommentFail3() {
         CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
-        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest("new body");
+        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest(NEW_BODY);
 
         LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
@@ -330,26 +334,26 @@ public class TestCommentService {
 
         User user = Mockito.mock(User.class);
 
-        Comment comment = new Comment(44, "body", note, user, 2, created);
+        Comment comment = new Comment(COMMENT_ID, BODY, note, user, SECOND_NOTE_VERSION, created);
 
         Session session = Mockito.mock(Session.class);
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(note.getId()).thenReturn(12);
+        when(note.getId()).thenReturn(NOTE_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(commentDao.getCommentById(44)).thenReturn(comment);
+        when(commentDao.getCommentById(COMMENT_ID)).thenReturn(comment);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.updateComment(request, 44, "some-token")
+                ServerException.class, () -> commentService.updateComment(request, COMMENT_ID, TOKEN)
         );
     }
 
@@ -363,7 +367,7 @@ public class TestCommentService {
 
         Note note = Mockito.mock(Note.class);
 
-        Comment comment = new Comment(44, "body", note, author, 2, created);
+        Comment comment = new Comment(COMMENT_ID, BODY, note, author, SECOND_NOTE_VERSION, created);
 
         NoteVersion noteVersion = Mockito.mock(NoteVersion.class);
 
@@ -373,30 +377,30 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(author.getId()).thenReturn(100);
+        when(author.getId()).thenReturn(ANOTHER_USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(12)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
-        when(note.getId()).thenReturn(12);
+        when(note.getId()).thenReturn(NOTE_ID);
 
-        when(commentDao.getCommentById(44)).thenReturn(comment);
+        when(commentDao.getCommentById(COMMENT_ID)).thenReturn(comment);
 
         when(note.getCurrentVersion()).thenReturn(noteVersion);
 
-        when(noteVersion.getRevisionId()).thenReturn(2);
+        when(noteVersion.getRevisionId()).thenReturn(SECOND_NOTE_VERSION);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
-        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest("new body");
+        UpdateCommentDtoRequest request = new UpdateCommentDtoRequest(NEW_BODY);
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.updateComment(request, 44, "some-token")
+                ServerException.class, () -> commentService.updateComment(request, COMMENT_ID, TOKEN)
         );
     }
 
@@ -410,29 +414,29 @@ public class TestCommentService {
 
         Note note = Mockito.mock(Note.class);
 
-        Comment comment = new Comment(44, "body", note, user, 2, created);
+        Comment comment = new Comment(COMMENT_ID, BODY, note, user, SECOND_NOTE_VERSION, created);
 
         Session session = Mockito.mock(Session.class);
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
         when(note.getAuthor()).thenReturn(user);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(12)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
-        when(note.getId()).thenReturn(12);
+        when(note.getId()).thenReturn(NOTE_ID);
 
-        when(commentDao.getCommentById(44)).thenReturn(comment);
+        when(commentDao.getCommentById(COMMENT_ID)).thenReturn(comment);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
-        EmptyDtoResponse response = commentService.deleteComment(44, "some-token");
+        EmptyDtoResponse response = commentService.deleteComment(COMMENT_ID, TOKEN);
 
         Assertions.assertAll(
                 () -> verify(commentDao).deleteComment(comment)
@@ -453,29 +457,29 @@ public class TestCommentService {
 
         User author = Mockito.mock(User.class);
 
-        Comment comment = new Comment(44, "body", note, author, 2, created);
+        Comment comment = new Comment(COMMENT_ID, BODY, note, author, SECOND_NOTE_VERSION, created);
 
         when(session.getUser()).thenReturn(user);
 
-        when(author.getId()).thenReturn(10);
+        when(author.getId()).thenReturn(USER_ID);
 
-        when(user.getId()).thenReturn(101);
+        when(user.getId()).thenReturn(ANOTHER_USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(12)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
-        when(note.getId()).thenReturn(12);
+        when(note.getId()).thenReturn(NOTE_ID);
 
-        when(commentDao.getCommentById(44)).thenReturn(comment);
+        when(commentDao.getCommentById(COMMENT_ID)).thenReturn(comment);
 
         when(note.getAuthor()).thenReturn(user);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
-        EmptyDtoResponse response = commentService.deleteComment(44, "some-token");
+        EmptyDtoResponse response = commentService.deleteComment(COMMENT_ID, TOKEN);
 
         Assertions.assertAll(
                 () -> verify(commentDao).deleteComment(comment)
@@ -496,29 +500,29 @@ public class TestCommentService {
 
         User author = Mockito.mock(User.class);
 
-        Comment comment = new Comment(44, "body", note, author, 2, created);
+        Comment comment = new Comment(COMMENT_ID, BODY, note, author, SECOND_NOTE_VERSION, created);
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(101);
+        when(user.getId()).thenReturn(ANOTHER_USER_ID);
 
-        when(author.getId()).thenReturn(10);
+        when(author.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(12)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
-        when(commentDao.getCommentById(44)).thenReturn(comment);
+        when(commentDao.getCommentById(COMMENT_ID)).thenReturn(comment);
 
-        when(note.getId()).thenReturn(12);
+        when(note.getId()).thenReturn(NOTE_ID);
 
         when(user.getType()).thenReturn(UserType.SUPER_USER);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
-        EmptyDtoResponse response = commentService.deleteComment(44, "some-token");
+        EmptyDtoResponse response = commentService.deleteComment(COMMENT_ID, TOKEN);
 
         Assertions.assertAll(
                 () -> verify(commentDao).deleteComment(comment)
@@ -530,7 +534,7 @@ public class TestCommentService {
         CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.deleteComment(44, "some-token")
+                ServerException.class, () -> commentService.deleteComment(COMMENT_ID, TOKEN)
         );
     }
 
@@ -544,16 +548,16 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.deleteComment(44, "some-token")
+                ServerException.class, () -> commentService.deleteComment(COMMENT_ID, TOKEN)
         );
     }
 
@@ -569,24 +573,24 @@ public class TestCommentService {
 
         Note note = Mockito.mock(Note.class);
 
-        Comment comment = new Comment(44, "body", note, user, 2, created);
+        Comment comment = new Comment(COMMENT_ID, BODY, note, user, SECOND_NOTE_VERSION, created);
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(commentDao.getCommentById(44)).thenReturn(comment);
+        when(commentDao.getCommentById(COMMENT_ID)).thenReturn(comment);
 
-        when(note.getId()).thenReturn(12);
+        when(note.getId()).thenReturn(NOTE_ID);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.deleteComment(44, "some-token")
+                ServerException.class, () -> commentService.deleteComment(COMMENT_ID, TOKEN)
         );
     }
 
@@ -604,7 +608,7 @@ public class TestCommentService {
 
         User author = Mockito.mock(User.class);
 
-        Comment comment = new Comment(44, "body", note, author, 2, created);
+        Comment comment = new Comment(COMMENT_ID, BODY, note, author, SECOND_NOTE_VERSION, created);
 
         when(session.getUser()).thenReturn(user);
 
@@ -612,22 +616,22 @@ public class TestCommentService {
 
         when(note.getAuthor()).thenReturn(author);
 
-        when(author.getId()).thenReturn(10);
+        when(author.getId()).thenReturn(USER_ID);
 
-        when(note.getId()).thenReturn(12);
+        when(note.getId()).thenReturn(NOTE_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(12)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
-        when(commentDao.getCommentById(44)).thenReturn(comment);
+        when(commentDao.getCommentById(COMMENT_ID)).thenReturn(comment);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.deleteComment(44, "some-token")
+                ServerException.class, () -> commentService.deleteComment(COMMENT_ID, TOKEN)
         );
     }
 
@@ -645,26 +649,26 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(22)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
         when(note.getCurrentVersion()).thenReturn(noteVersion);
 
-        when(noteVersion.getRevisionId()).thenReturn(2);
+        when(noteVersion.getRevisionId()).thenReturn(SECOND_NOTE_VERSION);
 
         when(note.getAuthor()).thenReturn(user);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
-        EmptyDtoResponse response = commentService.deleteComments(22, "some-token");
+        EmptyDtoResponse response = commentService.deleteComments(NOTE_ID, TOKEN);
 
         Assertions.assertAll(
-                () -> verify(commentDao).deleteCommentsByNote(22, 2)
+                () -> verify(commentDao).deleteCommentsByNote(NOTE_ID, SECOND_NOTE_VERSION)
         );
     }
 
@@ -673,7 +677,7 @@ public class TestCommentService {
         CommentService commentService = new CommentService(userDao, sectionDao, noteDao, commentDao, config);
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.deleteComments(22, "some-token")
+                ServerException.class, () -> commentService.deleteComments(NOTE_ID, TOKEN)
         );
     }
 
@@ -687,16 +691,16 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.deleteComments(22, "some-token")
+                ServerException.class, () -> commentService.deleteComments(NOTE_ID, TOKEN)
         );
     }
 
@@ -716,26 +720,26 @@ public class TestCommentService {
 
         when(session.getUser()).thenReturn(user);
 
-        when(user.getId()).thenReturn(10);
+        when(user.getId()).thenReturn(USER_ID);
 
-        when(author.getId()).thenReturn(101);
+        when(author.getId()).thenReturn(ANOTHER_USER_ID);
 
-        when(userDao.getSessionByToken("some-token")).thenReturn(session);
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(noteDao.getNoteById(22)).thenReturn(note);
+        when(noteDao.getNoteById(NOTE_ID)).thenReturn(note);
 
         when(note.getCurrentVersion()).thenReturn(noteVersion);
 
-        when(noteVersion.getRevisionId()).thenReturn(2);
+        when(noteVersion.getRevisionId()).thenReturn(SECOND_NOTE_VERSION);
 
         when(note.getAuthor()).thenReturn(author);
 
-        when(config.getUserIdleTimeout()).thenReturn(3600);
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         Assertions.assertThrows(
-                ServerException.class, () -> commentService.deleteComments(22, "some-token")
+                ServerException.class, () -> commentService.deleteComments(NOTE_ID, TOKEN)
         );
     }
 

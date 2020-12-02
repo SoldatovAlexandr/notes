@@ -16,6 +16,7 @@ import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
 import net.thumbtack.school.notes.model.UserType;
+import net.thumbtack.school.notes.views.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -23,13 +24,11 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-public class UserService extends BaseService {
+public class UserService extends ServiceBase {
 
     @Autowired
     public UserService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao, Config config) {
@@ -202,7 +201,7 @@ public class UserService extends BaseService {
 
         LocalDateTime start = LocalDateTime.now().minusSeconds(config.getUserIdleTimeout());
 
-        List<User> users = getUsers(user, sortByRating, from, count, start, type);
+        List<UserView> users = getUsers(user, sortByRating, from, count, start, type);
 
         if (user.getType().equals(UserType.SUPER_USER)) {
             return UserDtoMapper.INSTANCE.toSuperProfilesItemDtoResponse(users);
@@ -211,7 +210,7 @@ public class UserService extends BaseService {
         return UserDtoMapper.INSTANCE.toProfilesItemDtoResponse(users);
     }
 
-    private List<User> getUsers(User user, String sortByRating, int from, int count, LocalDateTime start, String type)
+    private List<UserView> getUsers(User user, String sortByRating, int from, int count, LocalDateTime start, String type)
             throws ServerException {
         switch (type) {
             case "highRating":
@@ -235,15 +234,15 @@ public class UserService extends BaseService {
         }
     }
 
-    private List<User> getHighRatingUsers(User user, String sortByRatinggit, int from, int count, LocalDateTime start) {
+    private List<UserView> getHighRatingUsers(User user, String sortByRatinggit, int from, int count, LocalDateTime start) {
         return userDao.getAllUsersWithSortASC(user, from, count, start);
     }
 
-    private List<User> getLowRatingUsers(User user, String sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getLowRatingUsers(User user, String sortByRating, int from, int count, LocalDateTime start) {
         return userDao.getAllUsersWithSortDESC(user, from, count, start);
     }
 
-    private List<User> getAllUsers(User user, String sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getAllUsers(User user, String sortByRating, int from, int count, LocalDateTime start) {
         switch (sortByRating) {
             case "asc":
                 return userDao.getAllUsersWithSortASC(user, from, count, start);
@@ -254,7 +253,7 @@ public class UserService extends BaseService {
         }
     }
 
-    private List<User> getSuper(User user, String sortByRating, int from, int count, LocalDateTime start)
+    private List<UserView> getSuper(User user, String sortByRating, int from, int count, LocalDateTime start)
             throws ServerException {
         if (!user.getType().equals(UserType.SUPER_USER)) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
@@ -270,7 +269,7 @@ public class UserService extends BaseService {
         }
     }
 
-    private List<User> getDeleted(User user, String sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getDeleted(User user, String sortByRating, int from, int count, LocalDateTime start) {
         switch (sortByRating) {
             case "asc":
                 return userDao.getDeletedUsersWithSortASC(user, from, count, start);
@@ -281,7 +280,7 @@ public class UserService extends BaseService {
         }
     }
 
-    private List<User> getIgnoredBy(User user, String sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getIgnoredBy(User user, String sortByRating, int from, int count, LocalDateTime start) {
         switch (sortByRating) {
             case "asc":
                 return userDao.getIgnoreByWithSortASC(user, from, count, start);
@@ -292,7 +291,7 @@ public class UserService extends BaseService {
         }
     }
 
-    private List<User> getIgnore(User user, String sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getIgnore(User user, String sortByRating, int from, int count, LocalDateTime start) {
         switch (sortByRating) {
             case "asc":
                 return userDao.getIgnoreWithSortASC(user, from, count, start);
@@ -303,7 +302,7 @@ public class UserService extends BaseService {
         }
     }
 
-    private List<User> getFollowers(User user, String sortByRating, Integer from, Integer count, LocalDateTime start) {
+    private List<UserView> getFollowers(User user, String sortByRating, Integer from, Integer count, LocalDateTime start) {
         switch (sortByRating) {
             case "asc":
                 return userDao.getFollowersWithSortASC(user, from, count, start);
@@ -315,7 +314,7 @@ public class UserService extends BaseService {
     }
 
 
-    private List<User> getFollowings(User user, String sortByRating, Integer from, Integer count, LocalDateTime start) {
+    private List<UserView> getFollowings(User user, String sortByRating, Integer from, Integer count, LocalDateTime start) {
         switch (sortByRating) {
             case "asc":
                 return userDao.getFollowingsWithSortASC(user, from, count, start);
@@ -397,7 +396,7 @@ public class UserService extends BaseService {
     }
 
     private Cookie createCookie() {
-        return new Cookie(cookieName, UUID.randomUUID().toString());
+        return new Cookie(COOKIE_NAME, UUID.randomUUID().toString());
     }
 
     private void insertSession(User user, Cookie cookie) {

@@ -21,8 +21,8 @@ import java.util.List;
 @RequestMapping("/api")
 public class CommentEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentEndpoint.class);
+    private final static String COOKIE_NAME = "JAVASESSIONID";
     private final CommentService commentService;
-    private final String cookieName = "JAVASESSIONID";
 
     @Autowired
     public CommentEndpoint(CommentService commentService) {
@@ -32,13 +32,13 @@ public class CommentEndpoint {
     @PostMapping(value = "/comments", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public CommentInfoDtoResponse addComment(@Valid @RequestBody CreateCommentDtoRequest createCommentDtoRequest,
-                                             @CookieValue(value = cookieName) String token) throws ServerException {
+                                             @CookieValue(value = COOKIE_NAME) String token) throws ServerException {
         LOGGER.info("CommentEndpoint create comment");
         return commentService.createComment(createCommentDtoRequest, token);
     }
 
     @GetMapping(value = "/notes/{noteId}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CommentInfoDtoResponse> getComments(@CookieValue(value = cookieName) String token,
+    public List<CommentInfoDtoResponse> getComments(@CookieValue(value = COOKIE_NAME) String token,
                                                     @PathVariable("noteId") int noteId)
             throws ServerException {
         LOGGER.info("CommentEndpoint get comments");
@@ -48,21 +48,21 @@ public class CommentEndpoint {
     @PutMapping(value = "/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public CommentInfoDtoResponse updateNote(@Valid @RequestBody UpdateCommentDtoRequest updateCommentDtoRequest,
-                                             @CookieValue(value = cookieName) String token,
+                                             @CookieValue(value = COOKIE_NAME) String token,
                                              @PathVariable("commentId") int commentId) throws ServerException {
         LOGGER.info("CommentEndpoint update comments");
         return commentService.updateComment(updateCommentDtoRequest, commentId, token);
     }
 
     @DeleteMapping(value = "comments/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public EmptyDtoResponse deleteComment(@CookieValue(value = cookieName) String token,
+    public EmptyDtoResponse deleteComment(@CookieValue(value = COOKIE_NAME) String token,
                                           @PathVariable("commentId") int commentId) throws ServerException {
         LOGGER.info("CommentEndpoint delete comment");
         return commentService.deleteComment(commentId, token);
     }
 
     @DeleteMapping(value = "notes/{noteId}/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public EmptyDtoResponse deleteComments(@CookieValue(value = cookieName) String token,
+    public EmptyDtoResponse deleteComments(@CookieValue(value = COOKIE_NAME) String token,
                                            @PathVariable("noteId") int noteId) throws ServerException {
         LOGGER.info("CommentEndpoint delete comments");
         return commentService.deleteComments(noteId, token);

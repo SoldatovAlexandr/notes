@@ -17,8 +17,10 @@ import net.thumbtack.school.notes.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class NoteService extends BaseService {
+public class NoteService extends ServiceBase {
     private static final int START_REVISION_ID = 1;
     private static final int INCREMENT_REVISION_ID = 1;
 
@@ -148,5 +150,9 @@ public class NoteService extends BaseService {
         noteDao.insertNote(note);
 
         insertNoteVersion(note.getCurrentVersion(), note);
+    }
+
+    public String getNotes(Integer sectionId, String sortByRating, List<String> tags, boolean allTags, String timeFrom, String timeTo, Integer userId, String include, boolean comment, boolean allVersion, boolean commentVersion, Integer from, Integer count, String token) {
+        return null;
     }
 }

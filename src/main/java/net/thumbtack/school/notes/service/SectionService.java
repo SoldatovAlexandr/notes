@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SectionService extends BaseService {
+public class SectionService extends ServiceBase {
 
     @Autowired
     public SectionService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao, Config config) {

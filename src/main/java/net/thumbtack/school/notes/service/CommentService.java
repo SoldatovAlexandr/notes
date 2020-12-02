@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CommentService extends BaseService {
+public class CommentService extends ServiceBase {
     @Autowired
     public CommentService(UserDao userDao, SectionDao sectionDao, NoteDao noteDao, CommentDao commentDao, Config config) {
         super(userDao, sectionDao, noteDao, commentDao, config);

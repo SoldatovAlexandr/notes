@@ -23,8 +23,8 @@ import java.util.List;
 @RequestMapping("/api")
 public class UserEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserEndpoint.class);
+    private final static String COOKIE_NAME = "JAVASESSIONID";
     private final UserService userService;
-    private final String cookieName = "JAVASESSIONID";
 
     @Autowired
     public UserEndpoint(UserService userService) {
@@ -48,13 +48,13 @@ public class UserEndpoint {
     }
 
     @DeleteMapping(value = "/sessions")
-    public EmptyDtoResponse logoutUser(@CookieValue(value = cookieName) String token) {
+    public EmptyDtoResponse logoutUser(@CookieValue(value = COOKIE_NAME) String token) {
         LOGGER.info("UserEndpoint logout user");
         return userService.logoutUser(token);
     }
 
     @GetMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProfileInfoDtoResponse getProfileInfo(@CookieValue(value = cookieName) String token)
+    public ProfileInfoDtoResponse getProfileInfo(@CookieValue(value = COOKIE_NAME) String token)
             throws ServerException {
         LOGGER.info("UserEndpoint profile info");
         return userService.getProfileInfo(token);
@@ -62,7 +62,7 @@ public class UserEndpoint {
 
     @DeleteMapping(value = "/accounts", consumes = MediaType.APPLICATION_JSON_VALUE)
     public EmptyDtoResponse removeUser(@RequestBody PasswordDtoRequest passwordDtoRequest,
-                                       @CookieValue(value = cookieName) String token) throws ServerException {
+                                       @CookieValue(value = COOKIE_NAME) String token) throws ServerException {
         LOGGER.info("UserEndpoint remove user");
         return userService.removeUser(passwordDtoRequest, token);
     }
@@ -70,20 +70,20 @@ public class UserEndpoint {
     @PutMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public UpdateUserDtoResponse updateUser(@Valid @RequestBody UpdateUserDtoRequest updateUserDtoRequest,
-                                            @CookieValue(value = cookieName) String token) throws ServerException {
+                                            @CookieValue(value = COOKIE_NAME) String token) throws ServerException {
         LOGGER.info("UserEndpoint update user");
         return userService.updateUser(updateUserDtoRequest, token);
     }
 
     @PutMapping(value = "/accounts/{id}/super")
-    public EmptyDtoResponse setSuperUser(@CookieValue(value = cookieName) String token,
+    public EmptyDtoResponse setSuperUser(@CookieValue(value = COOKIE_NAME) String token,
                                          @PathVariable("id") int id) throws ServerException {
         LOGGER.info("UserEndpoint set user with id {} superuser", id);
         return userService.setSuperUser(token, id);
     }
 
     @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<? extends ProfileItemDtoResponse> getUsers(@CookieValue(value = cookieName) String token,
+    public List<? extends ProfileItemDtoResponse> getUsers(@CookieValue(value = COOKIE_NAME) String token,
                                                            @RequestParam(required = false, defaultValue = "") String sortByRating,
                                                            @RequestParam(required = false, defaultValue = "") String type,
                                                            @RequestParam(required = false, defaultValue = "0") int from,
@@ -95,7 +95,7 @@ public class UserEndpoint {
     @PostMapping(value = "/followings", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public EmptyDtoResponse addFollowing(@Valid @RequestBody FollowingDtoRequest followingDtoRequest,
-                                         @CookieValue(value = cookieName) String token
+                                         @CookieValue(value = COOKIE_NAME) String token
     ) throws ServerException {
         LOGGER.info("UserEndpoint add following");
         return userService.following(followingDtoRequest, token);
@@ -104,21 +104,21 @@ public class UserEndpoint {
     @PostMapping(value = "/ignore", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public EmptyDtoResponse addIgnore(@Valid @RequestBody IgnoreDtoRequest ignoreDtoRequest,
-                                      @CookieValue(value = cookieName) String token
+                                      @CookieValue(value = COOKIE_NAME) String token
     ) throws ServerException {
         LOGGER.info("UserEndpoint add ignore");
         return userService.ignore(ignoreDtoRequest, token);
     }
 
     @DeleteMapping(value = "/followings/{login}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public EmptyDtoResponse deleteFollowing(@CookieValue(value = cookieName) String token,
+    public EmptyDtoResponse deleteFollowing(@CookieValue(value = COOKIE_NAME) String token,
                                             @PathVariable("login") String login) throws ServerException {
         LOGGER.info("UserEndpoint delete following");
         return userService.deleteFollowing(login, token);
     }
 
     @DeleteMapping(value = "/ignore/{login}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public EmptyDtoResponse deleteIgnore(@CookieValue(value = cookieName) String token,
+    public EmptyDtoResponse deleteIgnore(@CookieValue(value = COOKIE_NAME) String token,
                                          @PathVariable("login") String login) throws ServerException {
         LOGGER.info("UserEndpoint delete ignore");
         return userService.deleteIgnore(login, token);

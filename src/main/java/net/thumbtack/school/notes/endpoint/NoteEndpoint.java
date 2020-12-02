@@ -15,14 +15,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @Validated
 @RequestMapping("/api/notes")
 public class NoteEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(NoteEndpoint.class);
+    private final static String COOKIE_NAME = "JAVASESSIONID";
     private final NoteService noteService;
-    private final String cookieName = "JAVASESSIONID";
 
     @Autowired
     public NoteEndpoint(NoteService noteService) {
@@ -32,14 +33,14 @@ public class NoteEndpoint {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public NoteInfoDtoResponse createNote(@Valid @RequestBody CreateNoteDtoRequest createNoteDtoRequest,
-                                          @CookieValue(value = cookieName) String token
+                                          @CookieValue(value = COOKIE_NAME) String token
     ) throws ServerException {
         LOGGER.info("NoteEndpoint create note");
         return noteService.createNote(createNoteDtoRequest, token);
     }
 
     @GetMapping(value = "/{noteId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public NoteInfoDtoResponse getProfileInfo(@CookieValue(value = cookieName) String token,
+    public NoteInfoDtoResponse getProfileInfo(@CookieValue(value = COOKIE_NAME) String token,
                                               @PathVariable("noteId") int noteId)
             throws ServerException {
         LOGGER.info("NoteEndpoint get note info");
@@ -49,7 +50,7 @@ public class NoteEndpoint {
     @PutMapping(value = "/{noteId}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public NoteInfoDtoResponse updateNote(@Valid @RequestBody UpdateNoteDtoRequest updateNoteDtoRequest,
-                                          @CookieValue(value = cookieName) String token,
+                                          @CookieValue(value = COOKIE_NAME) String token,
                                           @PathVariable("noteId") int noteId) throws ServerException {
         LOGGER.info("NoteEndpoint update note");
         return noteService.updateNote(updateNoteDtoRequest, noteId, token);
@@ -57,23 +58,37 @@ public class NoteEndpoint {
 
 
     @DeleteMapping(value = "/{noteId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public EmptyDtoResponse deleteNote(@CookieValue(value = cookieName) String token,
+    public EmptyDtoResponse deleteNote(@CookieValue(value = COOKIE_NAME) String token,
                                        @PathVariable("noteId") int noteId) throws ServerException {
         LOGGER.info("NoteEndpoint delete note");
         return noteService.deleteNote(noteId, token);
     }
 
-    //TODO: сделать этот метод
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getNotes(@CookieValue(value = cookieName) String token) throws ServerException {
+    public String getNotes(@CookieValue(value = COOKIE_NAME) String token,
+                           @RequestParam Integer sectionId,
+                           @RequestParam String sortByRating,
+                           @RequestParam List<String> tags,
+                           @RequestParam boolean allTags,
+                           @RequestParam String timeFrom,
+                           @RequestParam String timeTo,
+                           @RequestParam Integer user,
+                           @RequestParam String include,
+                           @RequestParam boolean comment,
+                           @RequestParam boolean allVersion,
+                           @RequestParam boolean commentVersion,
+                           @RequestParam Integer from,
+                           @RequestParam Integer count
+    ) throws ServerException {
         LOGGER.info("NoteEndpoint get notes");
-        return null;
+        return noteService.getNotes(sectionId, sortByRating, tags, allTags, timeFrom, timeTo, user,
+                include, comment, allVersion, commentVersion, from, count, token);
     }
 
     @PostMapping(value = "/{noteId}/rating", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public EmptyDtoResponse addRating(@Valid @RequestBody AddRatingDtoRequest addRatingDtoRequest,
-                                      @CookieValue(value = cookieName) String token,
+                                      @CookieValue(value = COOKIE_NAME) String token,
                                       @PathVariable("noteId") int noteId) throws ServerException {
         LOGGER.info("NoteEndpoint add rating");
         return noteService.addRating(addRatingDtoRequest, noteId, token);

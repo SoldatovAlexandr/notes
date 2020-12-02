@@ -20,8 +20,8 @@ import java.util.List;
 @RequestMapping("/api/sections")
 public class SectionEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(SectionEndpoint.class);
+    private final static String COOKIE_NAME = "JAVASESSIONID";
     private final SectionService sectionService;
-    private final String cookieName = "JAVASESSIONID";
 
     @Autowired
     public SectionEndpoint(SectionService sectionService) {
@@ -31,7 +31,7 @@ public class SectionEndpoint {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public SectionDtoResponse createSection(@Valid @RequestBody SectionDtoRequest sectionDtoRequest,
-                                            @CookieValue(value = cookieName) String token
+                                            @CookieValue(value = COOKIE_NAME) String token
     ) throws ServerException {
         LOGGER.info("SectionEndpoint create section");
         return sectionService.createSection(sectionDtoRequest, token);
@@ -40,21 +40,21 @@ public class SectionEndpoint {
     @PutMapping(value = "/{sectionId}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public SectionDtoResponse renameSection(@Valid @RequestBody SectionDtoRequest sectionDtoRequest,
-                                            @CookieValue(value = cookieName) String token,
+                                            @CookieValue(value = COOKIE_NAME) String token,
                                             @PathVariable("sectionId") int sectionId) throws ServerException {
         LOGGER.info("SectionEndpoint rename section");
         return sectionService.renameSection(sectionDtoRequest, sectionId, token);
     }
 
     @DeleteMapping(value = "/{sectionId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public EmptyDtoResponse removeSection(@CookieValue(value = cookieName) String token,
+    public EmptyDtoResponse removeSection(@CookieValue(value = COOKIE_NAME) String token,
                                           @PathVariable("sectionId") int sectionId) throws ServerException {
         LOGGER.info("SectionEndpoint remove section");
         return sectionService.removeSection(sectionId, token);
     }
 
     @GetMapping(value = "/{sectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SectionDtoResponse getSection(@CookieValue(value = cookieName) String token,
+    public SectionDtoResponse getSection(@CookieValue(value = COOKIE_NAME) String token,
                                          @PathVariable("sectionId") int sectionId)
             throws ServerException {
         LOGGER.info("SectionEndpoint get section");
@@ -62,7 +62,7 @@ public class SectionEndpoint {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SectionDtoResponse> getSections(@CookieValue(value = cookieName) String token) throws ServerException {
+    public List<SectionDtoResponse> getSections(@CookieValue(value = COOKIE_NAME) String token) throws ServerException {
         LOGGER.info("SectionEndpoint get sections");
         return sectionService.getSections(token);
     }

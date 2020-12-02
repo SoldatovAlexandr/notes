@@ -111,6 +111,3 @@ CREATE TABLE ignoring
     PRIMARY KEY (ignore_id, ignore_by_id)
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8;
-
-INSERT INTO user (first_name, last_name, patronymic, login, password, type)
-VALUES("admin", "admin", "admin", "admin", "password", "SUPER_USER");

@@ -4,22 +4,22 @@ image: maven_3.6.3_jdk11_mysql8:latest
 #      - name: mysql:latest
 
 variables:
-      # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
-      # MYSQL_USER: test
-      # MYSQL_PASSWORD: test
-      # MYSQL_ROOT_PASSWORD: pie.j9Ivae7cohtha
-      MYSQL_DATABASE: notes
-      MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-      MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true "
+  # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
+  # MYSQL_USER: test
+  # MYSQL_PASSWORD: test
+  # MYSQL_ROOT_PASSWORD: pie.j9Ivae7cohtha
+  MYSQL_DATABASE: notes
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true "
 
 
 test:
-    script:
+  script:
     #- apt-get update && apt-get -y upgrade && apt-get -y install mysql-client
     #- find /var/lib/mysql/mysql -exec touch -c -a {} + && 
-    - service mysql start 
+    - service mysql start
     - mysql -h localhost -u test -ptest < sql/notes.sql
     - mvn $MAVEN_CLI_OPTS clean compile test
-  
-    tags:
-         - mysql
+
+  tags:
+    - mysql

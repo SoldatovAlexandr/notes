@@ -345,7 +345,7 @@ public interface UserMapper {
             "LEFT JOIN rating ON note.id = rating.note_id " +
             "LEFT JOIN session ON user.id = session.user_id " +
             "GROUP BY user.id ORDER BY userRating ASC LIMIT #{count} OFFSET #{from}")
-    List<UserView> getAllUsersWithSortASC(@Param("user") User user, @Param("from") Integer from,
+    List<UserView> getAllUsersWithSortASC(@Param("from") Integer from,
                                           @Param("count") Integer count, @Param("start") LocalDateTime start);
 
     @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
@@ -357,7 +357,7 @@ public interface UserMapper {
             "LEFT JOIN rating ON note.id = rating.note_id " +
             "LEFT JOIN session ON user.id = session.user_id " +
             "GROUP BY user.id ORDER BY userRating DESC LIMIT #{count} OFFSET #{from}")
-    List<UserView> getAllUsersWithSortDESC(@Param("user") User user, @Param("from") Integer from,
+    List<UserView> getAllUsersWithSortDESC(@Param("from") Integer from,
                                            @Param("count") Integer count, @Param("start") LocalDateTime start);
 
     @Select("SELECT user.id AS id, user.login AS login, user.first_name AS firstName, user.last_name AS lastName, " +
@@ -369,7 +369,7 @@ public interface UserMapper {
             "LEFT JOIN rating ON note.id = rating.note_id " +
             "LEFT JOIN session ON user.id = session.user_id " +
             "GROUP BY user.id  LIMIT #{count} OFFSET #{from}")
-    List<UserView> getAllUsers(@Param("user") User user, @Param("from") Integer from,
+    List<UserView> getAllUsers(@Param("from") Integer from,
                                @Param("count") Integer count, @Param("start") LocalDateTime start);
 
 

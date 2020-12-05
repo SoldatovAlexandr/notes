@@ -7,7 +7,9 @@ import net.thumbtack.school.notes.erroritem.dto.ErrorDtoItem;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -105,5 +107,10 @@ public class GlobalErrorHandler {
         );
 
         return new ErrorDtoContainer(errorDtoItems);
+    }
+
+    @ExceptionHandler(ConversionFailedException.class)
+    public ResponseEntity<String> handleConflict(RuntimeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

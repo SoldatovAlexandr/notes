@@ -20,7 +20,7 @@ import java.util.Locale;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public class UserDtoMapper {
+public abstract class UserDtoMapper {
     public static final UserDtoMapper INSTANCE = Mappers.getMapper(UserDtoMapper.class);
 
     private final DateTimeFormatter dateTimeFormatter =
@@ -45,13 +45,6 @@ public class UserDtoMapper {
         );
     }
 
-    public List<ProfileInfoDtoResponse> toProfilesInfoDtoResponse(List<User> users) {
-        List<ProfileInfoDtoResponse> response = new ArrayList<>();
-        for (User user : users) {
-            response.add(toProfileInfoDtoResponse(user));
-        }
-        return response;
-    }
 
     public User toUser(UpdateUserDtoRequest updateUserDtoRequest) {
         return new User(

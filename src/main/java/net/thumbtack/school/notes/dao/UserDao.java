@@ -1,5 +1,7 @@
 package net.thumbtack.school.notes.dao;
 
+import net.thumbtack.school.notes.dto.request.UserRequestType;
+import net.thumbtack.school.notes.dto.response.SortType;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
 import net.thumbtack.school.notes.views.UserView;
@@ -39,47 +41,7 @@ public interface UserDao {
 
     int deleteIgnore(int ignoreId, int ignoreById);
 
-    List<UserView> getFollowings(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getFollowingsWithSortASC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getFollowingsWithSortDESC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getFollowersWithSortASC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getFollowersWithSortDESC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getFollowers(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getIgnoreByWithSortASC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getIgnoreByWithSortDESC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getIgnoreBy(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getIgnoreWithSortASC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getIgnoreWithSortDESC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getIgnore(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getAllUsersWithSortASC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getAllUsersWithSortDESC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getAllUsers(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getSuperUsersWithSortASC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getSuperUsersWithSortDESC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getSuperUsers(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getDeletedUsersWithSortASC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getDeletedUsersWithSortDESC(User user, int from, int count, LocalDateTime start);
-
-    List<UserView> getDeletedUsers(User user, int from, int count, LocalDateTime start);
+    List<UserView> getUsers(User user, SortType sortByRating, int from, int count, LocalDateTime start, UserRequestType type);
 }
 
 

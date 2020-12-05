@@ -1,10 +1,7 @@
 package net.thumbtack.school.notes.endpoint;
 
 import net.thumbtack.school.notes.dto.request.*;
-import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
-import net.thumbtack.school.notes.dto.response.ProfileInfoDtoResponse;
-import net.thumbtack.school.notes.dto.response.ProfileItemDtoResponse;
-import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
+import net.thumbtack.school.notes.dto.response.*;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.service.UserService;
 import org.slf4j.Logger;
@@ -83,14 +80,12 @@ public class UserEndpoint {
     }
 
     @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    // REVU для type напрашивается enum
-    // см. https://www.baeldung.com/spring-enum-request-param
-    // а при недопустимом значении пойдет прямым ходом в GlobalErrorHandler - см. по этой ссылке обработчик
-    public List<? extends ProfileItemDtoResponse> getUsers(@CookieValue(value = COOKIE_NAME) String token,
-                                                           @RequestParam(required = false, defaultValue = "") String sortByRating,
-                                                           @RequestParam(required = false, defaultValue = "") String type,
-                                                           @RequestParam(required = false, defaultValue = "0") int from,
-                                                           @RequestParam(required = false, defaultValue = "2147483647") Integer count
+    public List<? extends ProfileItemDtoResponse> getUsers(
+            @CookieValue(value = COOKIE_NAME) String token,
+            @RequestParam(required = false, defaultValue = "without") SortType sortByRating,
+            @RequestParam(required = false, defaultValue = "allUsers") UserRequestType type,
+            @RequestParam(required = false, defaultValue = "0") int from,
+            @RequestParam(required = false, defaultValue = "2147483647") Integer count
     ) throws ServerException {
         return userService.getUsers(sortByRating, type, from, count, token);
     }

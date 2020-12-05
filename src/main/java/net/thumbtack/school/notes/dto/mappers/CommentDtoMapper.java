@@ -8,13 +8,17 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public class CommentDtoMapper {
+public abstract class CommentDtoMapper {
     public static final CommentDtoMapper INSTANCE = Mappers.getMapper(CommentDtoMapper.class);
+    private final DateTimeFormatter dateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     public Comment toComment(CreateCommentDtoRequest createCommentDtoRequest) {
         Note note = new Note();
@@ -32,7 +36,7 @@ public class CommentDtoMapper {
                 comment.getNote().getId(),
                 comment.getAuthor().getId(),
                 comment.getRevisionId(),
-                comment.getCreated().toString()
+                comment.getCreated().format(dateTimeFormatter)
         );
     }
 

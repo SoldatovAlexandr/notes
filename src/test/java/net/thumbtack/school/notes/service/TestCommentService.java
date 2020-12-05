@@ -21,9 +21,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +47,10 @@ public class TestCommentService {
     private static final String TOKEN = "some-token";
     private static final String BODY = "body";
     private static final String NEW_BODY = "new body";
+
+    private final DateTimeFormatter dateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
     @Captor
     ArgumentCaptor<Comment> commentCaptor;
     @MockBean
@@ -95,7 +101,7 @@ public class TestCommentService {
         Comment comment = new Comment(NEW_COMMENT_ID, BODY, note, user, SECOND_NOTE_VERSION, created);
 
         CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(NEW_COMMENT_ID, BODY, NOTE_ID,
-                USER_ID, SECOND_NOTE_VERSION, created.toString());
+                USER_ID, SECOND_NOTE_VERSION, created.format(dateTimeFormatter));
 
         CommentInfoDtoResponse response = commentService.createComment(request, TOKEN);
 
@@ -190,11 +196,11 @@ public class TestCommentService {
         List<CommentInfoDtoResponse> expectedResponse = new ArrayList<>();
 
         expectedResponse.add(new CommentInfoDtoResponse(1, BODY, NOTE_ID, USER_ID, SECOND_NOTE_VERSION,
-                created.toString()));
+                created.format(dateTimeFormatter)));
         expectedResponse.add(new CommentInfoDtoResponse(2, BODY, NOTE_ID, userId11, THIRD_NOTE_VERSION,
-                created.toString()));
+                created.format(dateTimeFormatter)));
         expectedResponse.add(new CommentInfoDtoResponse(3, BODY, NOTE_ID, userId14, FIRST_NOTE_VERSION,
-                created.toString()));
+                created.format(dateTimeFormatter)));
 
         List<CommentInfoDtoResponse> response = commentService.getComments(NOTE_ID, TOKEN);
 
@@ -273,7 +279,7 @@ public class TestCommentService {
         when(session.getDate()).thenReturn(LocalDateTime.now());
 
         CommentInfoDtoResponse expectedResponse = new CommentInfoDtoResponse(COMMENT_ID, NEW_BODY, NOTE_ID, USER_ID,
-                SECOND_NOTE_VERSION, created.toString());
+                SECOND_NOTE_VERSION, created.format(dateTimeFormatter));
 
         UpdateCommentDtoRequest request = new UpdateCommentDtoRequest(NEW_BODY);
 

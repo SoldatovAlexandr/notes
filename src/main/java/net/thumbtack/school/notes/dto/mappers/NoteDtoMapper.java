@@ -16,7 +16,7 @@ import java.util.Locale;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public class NoteDtoMapper {
+public abstract class NoteDtoMapper {
     public static final NoteDtoMapper INSTANCE = Mappers.getMapper(NoteDtoMapper.class);
 
     private final DateTimeFormatter dateTimeFormatter =

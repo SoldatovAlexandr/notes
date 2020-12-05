@@ -11,7 +11,7 @@ import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public class SectionDtoMapper {
+public abstract class SectionDtoMapper {
     public static final SectionDtoMapper INSTANCE = Mappers.getMapper(SectionDtoMapper.class);
 
     public SectionDtoResponse toSectionDtoResponse(Section section) {

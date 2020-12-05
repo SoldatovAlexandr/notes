@@ -83,6 +83,9 @@ public class UserEndpoint {
     }
 
     @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+    // REVU для type напрашивается enum
+    // см. https://www.baeldung.com/spring-enum-request-param
+    // а при недопустимом значении пойдет прямым ходом в GlobalErrorHandler - см. по этой ссылке обработчик
     public List<? extends ProfileItemDtoResponse> getUsers(@CookieValue(value = COOKIE_NAME) String token,
                                                            @RequestParam(required = false, defaultValue = "") String sortByRating,
                                                            @RequestParam(required = false, defaultValue = "") String type,

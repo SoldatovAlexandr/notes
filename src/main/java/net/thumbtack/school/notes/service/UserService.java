@@ -242,6 +242,9 @@ public class UserService extends ServiceBase {
         return userDao.getAllUsersWithSortDESC(user, from, count, start);
     }
 
+    // REVU подумайте, а нельзя ли все последующие методы объединить в один, передав ему некие параметры (enum RequestType ?)
+    // которые он в свою очередь передаст DAO, а тот в зависимости от них вызовет тот или иной метод маппера
+    // уж больно они похожи
     private List<UserView> getAllUsers(User user, String sortByRating, int from, int count, LocalDateTime start) {
         switch (sortByRating) {
             case "asc":
@@ -255,6 +258,7 @@ public class UserService extends ServiceBase {
 
     private List<UserView> getSuper(User user, String sortByRating, int from, int count, LocalDateTime start)
             throws ServerException {
+    	// REVU между прочим, enum можно сравнивать с помощью == или !=
         if (!user.getType().equals(UserType.SUPER_USER)) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
         }

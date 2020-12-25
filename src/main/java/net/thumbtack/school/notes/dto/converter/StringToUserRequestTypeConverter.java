@@ -1,7 +1,7 @@
 package net.thumbtack.school.notes.dto.converter;
 
 import com.google.common.base.CaseFormat;
-import net.thumbtack.school.notes.dto.request.UserRequestType;
+import net.thumbtack.school.notes.dto.request.params.UserRequestType;
 import org.springframework.core.convert.converter.Converter;
 
 public class StringToUserRequestTypeConverter implements Converter<String, UserRequestType> {

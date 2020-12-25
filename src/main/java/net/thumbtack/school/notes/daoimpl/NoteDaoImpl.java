@@ -1,14 +1,20 @@
 package net.thumbtack.school.notes.daoimpl;
 
 import net.thumbtack.school.notes.dao.NoteDao;
+import net.thumbtack.school.notes.dto.request.params.IncludeRequestType;
+import net.thumbtack.school.notes.dto.request.params.SortRequestType;
 import net.thumbtack.school.notes.mappers.NoteMapper;
 import net.thumbtack.school.notes.model.Note;
 import net.thumbtack.school.notes.model.NoteVersion;
 import net.thumbtack.school.notes.model.Rating;
+import net.thumbtack.school.notes.views.NoteView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public class NoteDaoImpl implements NoteDao {
@@ -61,6 +67,14 @@ public class NoteDaoImpl implements NoteDao {
     public Rating getRating(int userId, int noteId) {
         LOGGER.debug("DAO get rating by userId: {} , noteId {}", userId, noteId);
         return noteMapper.getRating(userId, noteId);
+    }
+
+    @Override
+    public List<NoteView> getNotes(Integer sectionId, SortRequestType sortByRating, List<String> tags, boolean allTags,
+                                   LocalDateTime timeFrom, LocalDateTime timeTo, Integer userId, IncludeRequestType include,
+                                   boolean comment, boolean allVersion, boolean commentVersion, Integer from, Integer count) {
+        LOGGER.debug("DAO get notes");
+        return noteMapper.getNotes(sectionId);
     }
 
 }

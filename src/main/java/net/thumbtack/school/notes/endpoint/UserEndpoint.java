@@ -1,6 +1,8 @@
 package net.thumbtack.school.notes.endpoint;
 
 import net.thumbtack.school.notes.dto.request.*;
+import net.thumbtack.school.notes.dto.request.params.SortRequestType;
+import net.thumbtack.school.notes.dto.request.params.UserRequestType;
 import net.thumbtack.school.notes.dto.response.*;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.service.UserService;
@@ -82,7 +84,7 @@ public class UserEndpoint {
     @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<? extends ProfileItemDtoResponse> getUsers(
             @CookieValue(value = COOKIE_NAME) String token,
-            @RequestParam(required = false, defaultValue = "without") SortType sortByRating,
+            @RequestParam(required = false, defaultValue = "without") SortRequestType sortByRating,
             @RequestParam(required = false, defaultValue = "allUsers") UserRequestType type,
             @RequestParam(required = false, defaultValue = "0") int from,
             @RequestParam(required = false, defaultValue = "2147483647") Integer count

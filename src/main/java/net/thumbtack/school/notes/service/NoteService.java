@@ -9,14 +9,18 @@ import net.thumbtack.school.notes.dto.mappers.NoteDtoMapper;
 import net.thumbtack.school.notes.dto.request.AddRatingDtoRequest;
 import net.thumbtack.school.notes.dto.request.CreateNoteDtoRequest;
 import net.thumbtack.school.notes.dto.request.UpdateNoteDtoRequest;
+import net.thumbtack.school.notes.dto.request.params.IncludeRequestType;
+import net.thumbtack.school.notes.dto.request.params.SortRequestType;
 import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
 import net.thumbtack.school.notes.dto.response.NoteInfoDtoResponse;
 import net.thumbtack.school.notes.erroritem.code.ServerErrorCodeWithField;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.model.*;
+import net.thumbtack.school.notes.views.NoteView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -114,6 +118,24 @@ public class NoteService extends ServiceBase {
         return new EmptyDtoResponse();
     }
 
+    public List<NoteView> getNotes(Integer sectionId, SortRequestType sortByRating, List<String> tags, boolean allTags,
+                                   LocalDateTime timeFrom, LocalDateTime timeTo, Integer userId, IncludeRequestType include,
+                                   boolean comment, boolean allVersion, boolean commentVersion, Integer from, Integer count,
+                                   String token) throws ServerException {
+        Session session = getSession(token);
+
+        if (sectionId != null) {
+            Section section = getSection(sectionId);
+        }
+        if (userId != null) {
+            User user = getUserById(userId);
+        }
+        List<NoteView> notes = noteDao.getNotes(sectionId, sortByRating, tags, allTags, timeFrom, timeTo, userId, include,
+                comment, allVersion, commentVersion, from, count);
+
+        return notes;
+    }
+
     private void checkNotePermission(Note note, User user) throws ServerException {
         if (!(isAuthor(note, user) || isSuper(user))) {
             throw new ServerException(ServerErrorCodeWithField.NO_PERMISSIONS);
@@ -152,7 +174,4 @@ public class NoteService extends ServiceBase {
         insertNoteVersion(note.getCurrentVersion(), note);
     }
 
-    public String getNotes(Integer sectionId, String sortByRating, List<String> tags, boolean allTags, String timeFrom, String timeTo, Integer userId, String include, boolean comment, boolean allVersion, boolean commentVersion, Integer from, Integer count, String token) {
-        return null;
-    }
 }

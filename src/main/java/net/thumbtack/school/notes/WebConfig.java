@@ -1,5 +1,6 @@
 package net.thumbtack.school.notes;
 
+import net.thumbtack.school.notes.dto.converter.StringToIncludeRequestTypeConverter;
 import net.thumbtack.school.notes.dto.converter.StringToSortRequestTypeConverter;
 import net.thumbtack.school.notes.dto.converter.StringToUserRequestTypeConverter;
 import org.springframework.context.annotation.Configuration;
@@ -12,5 +13,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new StringToUserRequestTypeConverter());
         registry.addConverter(new StringToSortRequestTypeConverter());
+        registry.addConverter(new StringToIncludeRequestTypeConverter());
     }
 }

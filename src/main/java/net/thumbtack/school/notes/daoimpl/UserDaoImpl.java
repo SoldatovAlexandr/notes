@@ -1,8 +1,8 @@
 package net.thumbtack.school.notes.daoimpl;
 
 import net.thumbtack.school.notes.dao.UserDao;
-import net.thumbtack.school.notes.dto.request.UserRequestType;
-import net.thumbtack.school.notes.dto.response.SortType;
+import net.thumbtack.school.notes.dto.request.params.UserRequestType;
+import net.thumbtack.school.notes.dto.request.params.SortRequestType;
 import net.thumbtack.school.notes.mappers.UserMapper;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
@@ -120,7 +120,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<UserView> getUsers(
-            User user, SortType sortByRating, int from, int count, LocalDateTime start, UserRequestType type) {
+            User user, SortRequestType sortByRating, int from, int count, LocalDateTime start, UserRequestType type) {
         switch (type) {
             case HIGH_RATING:
                 return getHighRatingUsers(sortByRating, from, count, start);
@@ -143,22 +143,22 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    private List<UserView> getLowRatingUsers(SortType sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getLowRatingUsers(SortRequestType sortByRating, int from, int count, LocalDateTime start) {
         LOGGER.debug("DAO get low rating users");
         List<UserView> userViews = userMapper.getAllUsersWithSortASC(from, count, start);
 
-        if (sortByRating == SortType.DESC) {
+        if (sortByRating == SortRequestType.DESC) {
             Collections.reverse(userViews);
         }
 
         return userViews;
     }
 
-    private List<UserView> getHighRatingUsers(SortType sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getHighRatingUsers(SortRequestType sortByRating, int from, int count, LocalDateTime start) {
         LOGGER.debug("DAO get high rating users");
         List<UserView> userViews = userMapper.getAllUsersWithSortDESC(from, count, start);
 
-        if (sortByRating == SortType.ASC) {
+        if (sortByRating == SortRequestType.ASC) {
             Collections.reverse(userViews);
         }
 
@@ -166,7 +166,7 @@ public class UserDaoImpl implements UserDao {
     }
 
 
-    private List<UserView> getFollowings(User user, SortType sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getFollowings(User user, SortRequestType sortByRating, int from, int count, LocalDateTime start) {
         LOGGER.debug("DAO get followings users by user: {}", user);
         switch (sortByRating) {
             case ASC:
@@ -179,7 +179,7 @@ public class UserDaoImpl implements UserDao {
     }
 
 
-    private List<UserView> getFollowers(User user, SortType sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getFollowers(User user, SortRequestType sortByRating, int from, int count, LocalDateTime start) {
         LOGGER.debug("DAO get followers users by user: {}", user);
         switch (sortByRating) {
             case ASC:
@@ -191,7 +191,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    private List<UserView> getIgnoreBy(User user, SortType sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getIgnoreBy(User user, SortRequestType sortByRating, int from, int count, LocalDateTime start) {
         LOGGER.debug("DAO get ignoreBy users by user: {}", user);
         switch (sortByRating) {
             case ASC:
@@ -203,7 +203,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    private List<UserView> getIgnore(User user, SortType sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getIgnore(User user, SortRequestType sortByRating, int from, int count, LocalDateTime start) {
         LOGGER.debug("DAO get ignoreBy users by user: {}", user);
         switch (sortByRating) {
             case ASC:
@@ -216,7 +216,7 @@ public class UserDaoImpl implements UserDao {
     }
 
 
-    private List<UserView> getAllUsers(SortType sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getAllUsers(SortRequestType sortByRating, int from, int count, LocalDateTime start) {
         LOGGER.debug("DAO get all users by");
         switch (sortByRating) {
             case ASC:
@@ -229,7 +229,7 @@ public class UserDaoImpl implements UserDao {
     }
 
 
-    private List<UserView> getSuper(User user, SortType sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getSuper(User user, SortRequestType sortByRating, int from, int count, LocalDateTime start) {
         LOGGER.debug("DAO get super users by user: {}", user);
         switch (sortByRating) {
             case ASC:
@@ -241,7 +241,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    private List<UserView> getDeleted(User user, SortType sortByRating, int from, int count, LocalDateTime start) {
+    private List<UserView> getDeleted(User user, SortRequestType sortByRating, int from, int count, LocalDateTime start) {
         LOGGER.debug("DAO get deleted users by user: {}", user);
         switch (sortByRating) {
             case ASC:

@@ -7,6 +7,8 @@ import net.thumbtack.school.notes.dao.SectionDao;
 import net.thumbtack.school.notes.dao.UserDao;
 import net.thumbtack.school.notes.dto.mappers.UserDtoMapper;
 import net.thumbtack.school.notes.dto.request.*;
+import net.thumbtack.school.notes.dto.request.params.SortRequestType;
+import net.thumbtack.school.notes.dto.request.params.UserRequestType;
 import net.thumbtack.school.notes.dto.response.*;
 import net.thumbtack.school.notes.erroritem.code.ServerErrorCodeWithField;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
@@ -188,7 +190,7 @@ public class UserService extends ServiceBase {
         return new EmptyDtoResponse();
     }
 
-    public List<? extends ProfileItemDtoResponse> getUsers(SortType sortByRating, UserRequestType type, Integer from,
+    public List<? extends ProfileItemDtoResponse> getUsers(SortRequestType sortByRating, UserRequestType type, Integer from,
                                                            Integer count, String token) throws ServerException {
         Session session = getSession(token);
 

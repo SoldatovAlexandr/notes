@@ -1,6 +1,7 @@
 package net.thumbtack.school.notes.mappers;
 
 import net.thumbtack.school.notes.model.*;
+import net.thumbtack.school.notes.views.NoteView;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.mapping.FetchType;
 import org.springframework.stereotype.Component;
@@ -73,4 +74,7 @@ public interface NoteMapper {
             }
     )
     Rating getRating(@Param("userId") int userId, @Param("noteId") int noteId);
+
+    @Select("SELECT id, user_id AS authorId, subject, section_id AS sectionId FROM note WHERE section_id =#{sectionId}")
+    List<NoteView> getNotes(Integer sectionId);
 }

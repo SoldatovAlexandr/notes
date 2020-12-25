@@ -1,4 +1,4 @@
-package net.thumbtack.school.notes.dto.request;
+package net.thumbtack.school.notes.dto.request.params;
 
 public enum UserRequestType {
     HIGH_RATING,

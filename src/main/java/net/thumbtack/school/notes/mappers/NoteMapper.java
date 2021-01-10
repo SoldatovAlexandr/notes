@@ -110,6 +110,7 @@ public interface NoteMapper {
             "</if>" +
             "<where> " +
             "note.created BETWEEN #{timeFrom} AND #{timeTo} " +
+            "AND note_version.body = (SELECT body FROM note_version WHERE note_version.note_id = id AND note_version.revision_id =( SELECT MAX(revision_id) FROM note_version WHERE note_version.note_id = id)) "+
             "<if test =' needSection eq true ' > AND note.section_id= #{sectionId} </if> " +
             "<if test = ' needUser eq true' > AND note.user_id = #{userId} </if> " +
             "AND note_version.body IN (SELECT body FROM note_version WHERE revision_id = " +

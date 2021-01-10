@@ -9,7 +9,10 @@ import net.thumbtack.school.notes.dto.mappers.UserDtoMapper;
 import net.thumbtack.school.notes.dto.request.*;
 import net.thumbtack.school.notes.dto.request.params.SortRequestType;
 import net.thumbtack.school.notes.dto.request.params.UserRequestType;
-import net.thumbtack.school.notes.dto.response.*;
+import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
+import net.thumbtack.school.notes.dto.response.ProfileInfoDtoResponse;
+import net.thumbtack.school.notes.dto.response.ProfileItemDtoResponse;
+import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
 import net.thumbtack.school.notes.erroritem.code.ServerErrorCodeWithField;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.model.Session;
@@ -173,7 +176,7 @@ public class UserService extends ServiceBase {
 
         User following = getUserByLogin(login);
 
-        deleteFollowing(follower.getId(), following.getId());
+        userDao.deleteFollowing(follower.getId(), following.getId());
 
         return new EmptyDtoResponse();
     }
@@ -185,13 +188,14 @@ public class UserService extends ServiceBase {
 
         User ignore = getUserByLogin(login);
 
-        deleteIgnore(ignore.getId(), ignoreBy.getId());
+        userDao.deleteIgnore(ignore.getId(), ignoreBy.getId());
 
         return new EmptyDtoResponse();
     }
 
-    public List<? extends ProfileItemDtoResponse> getUsers(SortRequestType sortByRating, UserRequestType type, Integer from,
-                                                           Integer count, String token) throws ServerException {
+    public List<? extends ProfileItemDtoResponse> getUsers(SortRequestType sortByRating, UserRequestType type,
+                                                           Integer from, Integer count, String token)
+            throws ServerException {
         Session session = getSession(token);
 
         User user = session.getUser();
@@ -211,18 +215,6 @@ public class UserService extends ServiceBase {
         return UserDtoMapper.INSTANCE.toProfilesItemDtoResponse(users);
     }
 
-    private void deleteIgnore(int ignoreId, int ignoreById) throws ServerException {
-        if (userDao.deleteIgnore(ignoreId, ignoreById) == 0) {
-            throw new ServerException(ServerErrorCodeWithField.NOT_IGNORING);
-        }
-    }
-
-    private void deleteFollowing(int followerId, int followingId) throws ServerException {
-        if (userDao.deleteFollowing(followerId, followingId) == 0) {
-            throw new ServerException(ServerErrorCodeWithField.NOT_FOLLOWING);
-        }
-    }
-
     private void insertIgnore(int ignoreId, int ignoreById) throws ServerException {
         if (ignoreId == ignoreById) {
             throw new ServerException(ServerErrorCodeWithField.CAN_NOT_IGNORE);
@@ -230,6 +222,7 @@ public class UserService extends ServiceBase {
 
         try {
             userDao.deleteFollowing(ignoreId, ignoreById);
+
             userDao.insertIgnore(ignoreId, ignoreById);
         } catch (DuplicateKeyException e) {
             throw new ServerException(ServerErrorCodeWithField.IGNORE_ALREADY_EXIST);

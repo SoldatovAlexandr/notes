@@ -12,6 +12,7 @@ import net.thumbtack.school.notes.dto.request.UpdateNoteDtoRequest;
 import net.thumbtack.school.notes.dto.request.params.IncludeRequestType;
 import net.thumbtack.school.notes.dto.request.params.SortRequestType;
 import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
+import net.thumbtack.school.notes.dto.response.NoteDtoResponse;
 import net.thumbtack.school.notes.dto.response.NoteInfoDtoResponse;
 import net.thumbtack.school.notes.erroritem.code.ServerErrorCodeWithField;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
@@ -118,10 +119,11 @@ public class NoteService extends ServiceBase {
         return new EmptyDtoResponse();
     }
 
-    public List<NoteView> getNotes(Integer sectionId, SortRequestType sortByRating, List<String> tags, boolean allTags,
-                                   LocalDateTime timeFrom, LocalDateTime timeTo, Integer userId, IncludeRequestType include,
-                                   boolean comment, boolean allVersion, boolean commentVersion, Integer from, Integer count,
-                                   String token) throws ServerException {
+    public List<NoteDtoResponse> getNotes(Integer sectionId, SortRequestType sortByRating, List<String> tags,
+                                          boolean allTags, LocalDateTime timeFrom, LocalDateTime timeTo, Integer userId,
+                                          IncludeRequestType include, boolean comment, boolean allVersion,
+                                          boolean commentVersion, Integer from, Integer count,
+                                          String token) throws ServerException {
         Session session = getSession(token);
 
         if (sectionId != null) {
@@ -130,10 +132,31 @@ public class NoteService extends ServiceBase {
         if (userId != null) {
             User user = getUserById(userId);
         }
-        List<NoteView> notes = noteDao.getNotes(sectionId, sortByRating, tags, allTags, timeFrom, timeTo, userId, include,
-                comment, allVersion, commentVersion, from, count);
+        if (timeTo == null) {
+            timeTo = LocalDateTime.now();
+        }
 
-        return notes;
+        List<NoteView> notes = noteDao.getNotes(sectionId, sortByRating, tags, allTags, timeFrom, timeTo,
+                userId, include, from, count, session.getUser().getId());
+
+        return toNoteDtoResponse(notes, comment, allVersion, commentVersion);
+    }
+
+    private List<NoteDtoResponse> toNoteDtoResponse(List<NoteView> notes, boolean comment, boolean allVersion,
+                                                    boolean commentVersion) {
+        if (allVersion) {
+            if (comment) {
+                if (commentVersion) {
+                    return NoteDtoMapper.INSTANCE.toNoteWithCommentsAndVersionDtoResponse(notes);
+                } else {
+                    return NoteDtoMapper.INSTANCE.toNoteWithCommentsDtoResponse(notes);
+                }
+            } else {
+                return NoteDtoMapper.INSTANCE.toNoteWithVersionsDtoResponse(notes);
+            }
+        } else {
+            return NoteDtoMapper.INSTANCE.toNoteDtoResponse(notes);
+        }
     }
 
     private void checkNotePermission(Note note, User user) throws ServerException {
@@ -173,5 +196,4 @@ public class NoteService extends ServiceBase {
 
         insertNoteVersion(note.getCurrentVersion(), note);
     }
-
 }

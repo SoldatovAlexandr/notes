@@ -19,6 +19,16 @@ public interface CommentMapper {
 
     @Select("SELECT id, user_id AS authorId, note_id AS noteId, revision_id AS revisionId, body, created" +
             " FROM comment WHERE note_id = #{noteId}")
+    @Results(
+            {
+                    @Result(property = "author", column = "authorId", javaType = User.class,
+                            one = @One(select = "net.thumbtack.school.notes.mappers.UserMapper.getById",
+                                    fetchType = FetchType.LAZY)),
+                    @Result(property = "note", column = "noteId", javaType = Note.class,
+                            one = @One(select = "net.thumbtack.school.notes.mappers.NoteMapper.getNoteById",
+                                    fetchType = FetchType.LAZY))
+            }
+    )
     List<Comment> getCommentsByNoteId(int noteId);
 
     @Select("SELECT id, user_id AS authorId, note_id AS noteId, revision_id AS revisionId, body, created" +

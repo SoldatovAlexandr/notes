@@ -10,12 +10,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoteView {
+public class RevisionView {
     private int id;
-    private int authorId;
-    private int sectionId;
-    private String subject;
     private String body;
     private LocalDateTime created;
-    private List<RevisionView> revisions;
+    private List<CommentView> comments;
 }

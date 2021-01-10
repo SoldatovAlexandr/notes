@@ -52,7 +52,7 @@ public class CommentService extends ServiceBase {
 
         Note note = getNote(noteId);
 
-        return CommentDtoMapper.INSTANCE.toCommentsInfoDtoResponse(note.getComments());
+        return CommentDtoMapper.INSTANCE.toCommentsInfoDtoResponse(note);
     }
 
     public CommentInfoDtoResponse updateComment(UpdateCommentDtoRequest updateCommentDtoRequest,

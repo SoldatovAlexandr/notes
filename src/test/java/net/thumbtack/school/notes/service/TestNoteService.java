@@ -8,7 +8,10 @@ import net.thumbtack.school.notes.dao.UserDao;
 import net.thumbtack.school.notes.dto.request.AddRatingDtoRequest;
 import net.thumbtack.school.notes.dto.request.CreateNoteDtoRequest;
 import net.thumbtack.school.notes.dto.request.UpdateNoteDtoRequest;
+import net.thumbtack.school.notes.dto.request.params.IncludeRequestType;
+import net.thumbtack.school.notes.dto.request.params.SortRequestType;
 import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
+import net.thumbtack.school.notes.dto.response.NoteDtoResponse;
 import net.thumbtack.school.notes.dto.response.NoteInfoDtoResponse;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.model.*;
@@ -760,6 +763,47 @@ public class TestNoteService {
 
         Assertions.assertThrows(
                 ServerException.class, () -> noteService.addRating(request, NOTE_ID, TOKEN)
+        );
+    }
+
+    @Test
+    public void testGetNotes() throws ServerException {
+        NoteService noteService = new NoteService(userDao, sectionDao, noteDao, commentDao, config);
+
+        User user = Mockito.mock(User.class);
+
+        Session session = Mockito.mock(Session.class);
+
+        Section section = Mockito.mock(Section.class);
+
+        LocalDateTime timeTo = LocalDateTime.now();
+
+        LocalDateTime timeFrom = timeTo.minusSeconds(100);
+
+        when(session.getUser()).thenReturn(user);
+
+        when(sectionDao.getById(SECTION_ID)).thenReturn(section);
+
+        when(user.getId()).thenReturn(USER_ID);
+
+        when(userDao.getById(USER_ID)).thenReturn(user);
+
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
+
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
+
+        when(session.getDate()).thenReturn(LocalDateTime.now());
+
+        when(noteDao.getNotes(SECTION_ID, SortRequestType.WITHOUT, null, false, timeFrom, timeTo, USER_ID,
+                IncludeRequestType.ONLY_IGNORE, 0, 10, USER_ID)).thenReturn(List.of());
+
+        List<NoteDtoResponse> notes = noteService.getNotes(SECTION_ID, SortRequestType.WITHOUT, null, false,
+                timeFrom, timeTo, USER_ID, IncludeRequestType.ONLY_IGNORE, false,
+                false, false, 0, 10, TOKEN);
+
+        Assertions.assertAll(
+                () -> verify(noteDao).getNotes(SECTION_ID, SortRequestType.WITHOUT, null, false, timeFrom,
+                        timeTo, USER_ID, IncludeRequestType.ONLY_IGNORE, 0, 10, USER_ID)
         );
     }
 }

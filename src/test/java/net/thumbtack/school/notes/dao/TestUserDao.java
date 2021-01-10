@@ -1,14 +1,18 @@
 package net.thumbtack.school.notes.dao;
 
+import net.thumbtack.school.notes.dto.request.params.SortRequestType;
+import net.thumbtack.school.notes.dto.request.params.UserRequestType;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
 import net.thumbtack.school.notes.model.UserType;
+import net.thumbtack.school.notes.views.UserView;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -255,5 +259,36 @@ public class TestUserDao extends TestBaseDao {
                 () -> Assertions.assertEquals(0, userFromDb1.getIgnoredBy().size()),
                 () -> Assertions.assertEquals(0, userFromDb2.getIgnore().size())
         );
+    }
+
+    @Test
+    public void testGetUsers() {
+        LocalDateTime time = getCurrentDateTime();
+        User user1 = new User("login1", "password",
+                "first", "lastName", "patronymic", time);
+        User user2 = new User("login2", "password",
+                "first", "lastName", "patronymic", time);
+        User user3 = new User("login3", "password",
+                "first", "lastName", "patronymic", time);
+
+        userDao.insert(user1);
+        userDao.insert(user2);
+        userDao.insert(user3);
+
+        List<UserView> expectedUsers = List.of(
+                new UserView(user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getPatronymic(),
+                        user1.getLogin(), user1.isDeleted(),
+                        false, 0, false, time),
+                new UserView(user2.getId(), user2.getFirstName(), user2.getLastName(), user2.getPatronymic(),
+                        user2.getLogin(), user2.isDeleted(),
+                        false, 0, false, time),
+                new UserView(user3.getId(), user3.getFirstName(), user3.getLastName(), user3.getPatronymic(),
+                        user3.getLogin(), user3.isDeleted(),
+                        false, 0, false, time));
+
+        List<UserView> users = userDao.getUsers(user1, SortRequestType.WITHOUT, 0, 3,
+                LocalDateTime.now().minusSeconds(60), UserRequestType.ALL_USERS);
+
+        Assertions.assertEquals(expectedUsers, users);
     }
 }

@@ -1,8 +1,8 @@
 package net.thumbtack.school.notes.daoimpl;
 
 import net.thumbtack.school.notes.dao.UserDao;
-import net.thumbtack.school.notes.dto.request.params.UserRequestType;
 import net.thumbtack.school.notes.dto.request.params.SortRequestType;
+import net.thumbtack.school.notes.dto.request.params.UserRequestType;
 import net.thumbtack.school.notes.mappers.UserMapper;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;

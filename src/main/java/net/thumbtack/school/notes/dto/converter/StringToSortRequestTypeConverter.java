@@ -11,7 +11,7 @@ public class StringToSortRequestTypeConverter implements Converter<String, SortR
             String type = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, typeString);
             return SortRequestType.valueOf(type);
         } catch (IllegalArgumentException e) {
-            return null;
+            return SortRequestType.WITHOUT;
         }
     }
 }

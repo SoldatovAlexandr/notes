@@ -5,17 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoteView {
+public class CommentView {
     private int id;
-    private int authorId;
-    private int sectionId;
-    private String subject;
     private String body;
+    private int authorId;
+    private int revisionId;
     private LocalDateTime created;
-    private List<RevisionView> revisions;
 }

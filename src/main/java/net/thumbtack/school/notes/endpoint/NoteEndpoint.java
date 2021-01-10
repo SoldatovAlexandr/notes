@@ -6,10 +6,10 @@ import net.thumbtack.school.notes.dto.request.UpdateNoteDtoRequest;
 import net.thumbtack.school.notes.dto.request.params.IncludeRequestType;
 import net.thumbtack.school.notes.dto.request.params.SortRequestType;
 import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
+import net.thumbtack.school.notes.dto.response.NoteDtoResponse;
 import net.thumbtack.school.notes.dto.response.NoteInfoDtoResponse;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.service.NoteService;
-import net.thumbtack.school.notes.views.NoteView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,22 +70,22 @@ public class NoteEndpoint {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<NoteView> getNotes(@CookieValue(value = COOKIE_NAME) String token,
-                                   @RequestParam(required = false) Integer sectionId,
-                                   @RequestParam(required = false) SortRequestType sortByRating,
-                                   @RequestParam(required = false) List<String> tags,
-                                   @RequestParam(required = false) boolean allTags,
-                                   @RequestParam(required = false)
-                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timeFrom,
-                                   @RequestParam(required = false)
-                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timeTo,
-                                   @RequestParam(required = false, value = "user") Integer userId,
-                                   @RequestParam(required = false) IncludeRequestType include,
-                                   @RequestParam(required = false) boolean comment,
-                                   @RequestParam(required = false) boolean allVersion,
-                                   @RequestParam(required = false) boolean commentVersion,
-                                   @RequestParam(required = false) Integer from,
-                                   @RequestParam(required = false) Integer count
+    public List<NoteDtoResponse> getNotes(@CookieValue(value = COOKIE_NAME) String token,
+                                          @RequestParam(required = false) Integer sectionId,
+                                          @RequestParam(required = false, defaultValue = "without") SortRequestType sortByRating,
+                                          @RequestParam(required = false) List<String> tags,
+                                          @RequestParam(required = false, defaultValue = "false") boolean allTags,
+                                          @RequestParam(required = false, defaultValue = "2021-01-01T00:00:00.000-00:00")
+                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timeFrom,
+                                          @RequestParam(required = false)
+                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timeTo,
+                                          @RequestParam(required = false, value = "user") Integer userId,
+                                          @RequestParam(required = false, defaultValue = "without") IncludeRequestType include,
+                                          @RequestParam(required = false, defaultValue = "false") boolean comment,
+                                          @RequestParam(required = false, defaultValue = "false") boolean allVersion,
+                                          @RequestParam(required = false, defaultValue = "false") boolean commentVersion,
+                                          @RequestParam(required = false, defaultValue = "0") Integer from,
+                                          @RequestParam(required = false, defaultValue = "2147483647") Integer count
     ) throws ServerException {
         LOGGER.info("NoteEndpoint get notes");
         return noteService.getNotes(sectionId, sortByRating, tags, allTags, timeFrom, timeTo, userId,

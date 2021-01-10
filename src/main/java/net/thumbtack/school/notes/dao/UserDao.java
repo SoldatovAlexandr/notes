@@ -1,7 +1,7 @@
 package net.thumbtack.school.notes.dao;
 
-import net.thumbtack.school.notes.dto.request.params.UserRequestType;
 import net.thumbtack.school.notes.dto.request.params.SortRequestType;
+import net.thumbtack.school.notes.dto.request.params.UserRequestType;
 import net.thumbtack.school.notes.model.Session;
 import net.thumbtack.school.notes.model.User;
 import net.thumbtack.school.notes.views.UserView;
@@ -41,7 +41,8 @@ public interface UserDao {
 
     int deleteIgnore(int ignoreId, int ignoreById);
 
-    List<UserView> getUsers(User user, SortRequestType sortByRating, int from, int count, LocalDateTime start, UserRequestType type);
+    List<UserView> getUsers(User user, SortRequestType sortByRating, int from, int count,
+                            LocalDateTime start, UserRequestType type);
 }
 
 

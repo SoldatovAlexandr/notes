@@ -70,11 +70,60 @@ public class NoteDaoImpl implements NoteDao {
     }
 
     @Override
-    public List<NoteView> getNotes(Integer sectionId, SortRequestType sortByRating, List<String> tags, boolean allTags,
-                                   LocalDateTime timeFrom, LocalDateTime timeTo, Integer userId, IncludeRequestType include,
-                                   boolean comment, boolean allVersion, boolean commentVersion, Integer from, Integer count) {
+    public List<NoteView> getNotes(Integer sectionId, SortRequestType sortByRating, List<String> listTags,
+                                   boolean allTags, LocalDateTime timeFrom, LocalDateTime timeTo, Integer userId,
+                                   IncludeRequestType include, Integer from, Integer count, Integer profileId) {
         LOGGER.debug("DAO get notes");
-        return noteMapper.getNotes(sectionId);
+
+        String tags = buildTags(listTags);
+
+        boolean hasTags = !tags.isEmpty();
+
+        boolean sort = !sortByRating.equals(SortRequestType.WITHOUT);
+
+        boolean asc = sortByRating.equals(SortRequestType.ASC);
+
+        boolean needUser = userId != null;
+
+        boolean needSection = sectionId != null;
+
+        boolean onlyIgnore = include.equals(IncludeRequestType.ONLY_IGNORE);
+
+        boolean notIgnore = include.equals(IncludeRequestType.NOT_IGNORE);
+
+        boolean onlyFollowing = include.equals(IncludeRequestType.ONLY_FOLLOWINGS);
+
+        return noteMapper.getNotes(
+                sectionId,
+                tags,
+                allTags,
+                timeFrom,
+                timeTo,
+                userId,
+                from,
+                count,
+                profileId,
+                hasTags,
+                sort,
+                asc,
+                needUser,
+                needSection,
+                onlyIgnore,
+                notIgnore,
+                onlyFollowing
+        );
     }
 
+    private String buildTags(List<String> listTags) {
+        StringBuilder tags = new StringBuilder();
+        if (listTags == null) {
+            return "";
+        }
+        for (String str : listTags) {
+            if (!str.isEmpty()) {
+                tags.append("+").append(str).append(" ");
+            }
+        }
+        return tags.toString();
+    }
 }

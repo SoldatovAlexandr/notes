@@ -11,7 +11,7 @@ public class StringToUserRequestTypeConverter implements Converter<String, UserR
             String type = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, typeString);
             return UserRequestType.valueOf(type);
         } catch (IllegalArgumentException e) {
-            return null;
+            return UserRequestType.ALL_USERS;
         }
     }
 }

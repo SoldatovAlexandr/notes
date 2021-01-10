@@ -15,7 +15,6 @@ public class UserView {
     private String lastName;
     private String patronymic;
     private String login;
-    private String password;
     private boolean deleted;
     private boolean isSuper;
     private float userRating;

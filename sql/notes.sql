@@ -69,12 +69,13 @@ CREATE TABLE note_version
     note_id         INT(11)      NOT NULL,
     revision_id     INT(11)      NOT NULL,
     body            VARCHAR(100) NOT NULL,
+    created			DATETIME     NOT NULL,
     PRIMARY KEY (note_id, revision_id),
     UNIQUE (note_id, revision_id),
+    FULLTEXT(body),
     FOREIGN KEY (note_id) REFERENCES note (id) ON DELETE cascade
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8;
-
 
 CREATE TABLE comment
 (

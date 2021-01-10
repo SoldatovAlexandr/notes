@@ -11,7 +11,7 @@ public class StringToIncludeRequestTypeConverter implements Converter<String, In
             String type = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, typeString);
             return IncludeRequestType.valueOf(type);
         } catch (IllegalArgumentException e) {
-            return null;
+            return IncludeRequestType.WITHOUT;
         }
     }
 }

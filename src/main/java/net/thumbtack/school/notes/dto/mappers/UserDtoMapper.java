@@ -9,60 +9,28 @@ import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
 import net.thumbtack.school.notes.model.User;
 import net.thumbtack.school.notes.views.UserView;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public abstract class UserDtoMapper {
     public static final UserDtoMapper INSTANCE = Mappers.getMapper(UserDtoMapper.class);
 
-    private final DateTimeFormatter dateTimeFormatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+    @Mapping(target = "registered", expression = "java(java.time.LocalDateTime.now())")
+    public abstract User toUser(RegisterUserDtoRequest registerUserDtoRequest);
 
-    public User toUser(RegisterUserDtoRequest registerUserDtoRequest) {
-        return new User(
-                registerUserDtoRequest.getLogin(),
-                registerUserDtoRequest.getPassword(),
-                registerUserDtoRequest.getFirstName(),
-                registerUserDtoRequest.getLastName(),
-                registerUserDtoRequest.getPatronymic(),
-                LocalDateTime.now());
-    }
+    public abstract ProfileInfoDtoResponse toProfileInfoDtoResponse(User user);
 
-    public ProfileInfoDtoResponse toProfileInfoDtoResponse(User user) {
-        return new ProfileInfoDtoResponse(
-                user.getFirstName(),
-                user.getLastName(),
-                user.getPatronymic(),
-                user.getLogin()
-        );
-    }
+    @Mapping(source = "newPassword", target = "password")
+    public abstract User toUser(UpdateUserDtoRequest updateUserDtoRequest);
 
-
-    public User toUser(UpdateUserDtoRequest updateUserDtoRequest) {
-        return new User(
-                updateUserDtoRequest.getNewPassword(),
-                updateUserDtoRequest.getFirstName(),
-                updateUserDtoRequest.getLastName(),
-                updateUserDtoRequest.getPatronymic());
-    }
-
-    public UpdateUserDtoResponse toUpdateUserDtoResponse(User user) {
-        return new UpdateUserDtoResponse(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getPatronymic(),
-                user.getLogin()
-        );
-    }
+    public abstract UpdateUserDtoResponse toUpdateUserDtoResponse(User user);
 
     public List<ProfileItemDtoResponse> toProfilesItemDtoResponse(List<UserView> users) {
         List<ProfileItemDtoResponse> response = new ArrayList<>();
@@ -72,19 +40,9 @@ public abstract class UserDtoMapper {
         return response;
     }
 
-    private ProfileItemDtoResponse toProfileItemDtoResponse(UserView user) {
-        return new ProfileItemDtoResponse(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getPatronymic(),
-                user.getLogin(),
-                user.getRegistered().format(dateTimeFormatter),
-                user.isOnline(),
-                user.isDeleted(),
-                user.getUserRating()
-        );
-    }
+    @Named("toProfileItemDtoResponse")
+    @Mapping(source = "registered", target = "timeRegistered", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    public abstract ProfileItemDtoResponse toProfileItemDtoResponse(UserView user);
 
     public List<SuperProfileItemDtoResponse> toSuperProfilesItemDtoResponse(List<UserView> users) {
         List<SuperProfileItemDtoResponse> response = new ArrayList<>();
@@ -94,18 +52,6 @@ public abstract class UserDtoMapper {
         return response;
     }
 
-    private SuperProfileItemDtoResponse toSuperProfileItemDtoResponse(UserView user) {
-        return new SuperProfileItemDtoResponse(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getPatronymic(),
-                user.getLogin(),
-                user.getRegistered().format(dateTimeFormatter),
-                user.isOnline(),
-                user.isDeleted(),
-                user.getUserRating(),
-                user.isSuper()
-        );
-    }
+    @Mapping(source = "registered", target = "timeRegistered", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    abstract SuperProfileItemDtoResponse toSuperProfileItemDtoResponse(UserView user);
 }

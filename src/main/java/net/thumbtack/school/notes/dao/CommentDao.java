@@ -13,4 +13,3 @@ public interface CommentDao {
 
     int deleteCommentsByNote(int noteId, int revisionId);
 }
-

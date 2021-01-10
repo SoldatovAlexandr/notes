@@ -6,8 +6,11 @@ import net.thumbtack.school.notes.dao.NoteDao;
 import net.thumbtack.school.notes.dao.SectionDao;
 import net.thumbtack.school.notes.dao.UserDao;
 import net.thumbtack.school.notes.dto.request.*;
+import net.thumbtack.school.notes.dto.request.params.SortRequestType;
+import net.thumbtack.school.notes.dto.request.params.UserRequestType;
 import net.thumbtack.school.notes.dto.response.EmptyDtoResponse;
 import net.thumbtack.school.notes.dto.response.ProfileInfoDtoResponse;
+import net.thumbtack.school.notes.dto.response.ProfileItemDtoResponse;
 import net.thumbtack.school.notes.dto.response.UpdateUserDtoResponse;
 import net.thumbtack.school.notes.erroritem.exception.ServerException;
 import net.thumbtack.school.notes.model.Session;
@@ -26,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -811,30 +815,6 @@ public class TestUserService {
         );
     }
 
-    @Test
-    public void testDeleteFollowingFail3() {
-        UserService userService = new UserService(userDao, sectionDao, noteDao, commentDao, config);
-
-        Session session = Mockito.mock(Session.class);
-
-        User follower = new User(LOGIN, PASSWORD, FIRST_NAME, LAST_NAME, PATRONYMIC, LocalDateTime.now());
-        User following = new User(ANOTHER_LOGIN, PASSWORD, ANOTHER_FIRST_NAME, ANOTHER_LAST_NAME, ANOTHER_PATRONYMIC,
-                LocalDateTime.now());
-
-        when(session.getUser()).thenReturn(follower);
-
-        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
-
-        when(userDao.getByLogin(ANOTHER_LOGIN)).thenReturn(following);
-
-        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
-
-        when(session.getDate()).thenReturn(LocalDateTime.now());
-
-        Assertions.assertThrows(
-                ServerException.class, () -> userService.deleteFollowing(ANOTHER_LOGIN, TOKEN)
-        );
-    }
 
     @Test
     public void testDeleteIgnore() throws ServerException {
@@ -899,27 +879,58 @@ public class TestUserService {
     }
 
     @Test
-    public void testDeleteIgnoreFail3() {
+    public void testGetUsers() throws ServerException {
         UserService userService = new UserService(userDao, sectionDao, noteDao, commentDao, config);
 
         Session session = Mockito.mock(Session.class);
 
-        User ignoreBy = new User(LOGIN, PASSWORD, FIRST_NAME, LAST_NAME, PATRONYMIC, LocalDateTime.now());
-        User ignore = new User(ANOTHER_LOGIN, PASSWORD, ANOTHER_FIRST_NAME, ANOTHER_LAST_NAME, ANOTHER_PATRONYMIC,
-                LocalDateTime.now());
+        User user = new User(LOGIN, PASSWORD, FIRST_NAME, LAST_NAME, PATRONYMIC, LocalDateTime.now());
 
-        when(session.getUser()).thenReturn(ignoreBy);
+        LocalDateTime dateTime = LocalDateTime.now();
 
         when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
 
-        when(userDao.getByLogin(ANOTHER_LOGIN)).thenReturn(ignore);
+        when(session.getUser()).thenReturn(user);
+
+        when(session.getDate()).thenReturn(dateTime);
 
         when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
 
-        when(session.getDate()).thenReturn(LocalDateTime.now());
+        when(userDao.getUsers(user, SortRequestType.WITHOUT, 0, 10, dateTime, UserRequestType.ALL_USERS))
+                .thenReturn(List.of());
+
+        List<? extends ProfileItemDtoResponse> users = userService.getUsers(SortRequestType.WITHOUT,
+                UserRequestType.ALL_USERS, 0, 10, TOKEN);
+
+        List<? extends ProfileItemDtoResponse> expectedUsers = List.of();
+
+        Assertions.assertEquals(expectedUsers, users);
+    }
+
+    @Test
+    public void testGetUsersFail() {
+        UserService userService = new UserService(userDao, sectionDao, noteDao, commentDao, config);
+
+        Session session = Mockito.mock(Session.class);
+
+        User user = new User(LOGIN, PASSWORD, FIRST_NAME, LAST_NAME, PATRONYMIC, LocalDateTime.now());
+
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        when(userDao.getSessionByToken(TOKEN)).thenReturn(session);
+
+        when(session.getUser()).thenReturn(user);
+
+        when(session.getDate()).thenReturn(dateTime);
+
+        when(config.getUserIdleTimeout()).thenReturn(IDLE_TIMEOUT);
+
+        when(userDao.getUsers(user, SortRequestType.WITHOUT, 0, 10, dateTime, UserRequestType.SUPER))
+                .thenReturn(List.of());
 
         Assertions.assertThrows(
-                ServerException.class, () -> userService.deleteIgnore(ANOTHER_LOGIN, TOKEN)
+                ServerException.class, () -> userService.getUsers(SortRequestType.WITHOUT, UserRequestType.SUPER,
+                        0, 10, TOKEN)
         );
     }
 

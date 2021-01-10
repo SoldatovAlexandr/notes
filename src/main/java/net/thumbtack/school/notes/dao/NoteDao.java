@@ -27,6 +27,6 @@ public interface NoteDao {
 
     List<NoteView> getNotes(Integer sectionId, SortRequestType sortByRating, List<String> tags, boolean allTags,
                             LocalDateTime timeFrom, LocalDateTime timeTo, Integer userId, IncludeRequestType include,
-                            boolean comment, boolean allVersion, boolean commentVersion, Integer from, Integer count);
+                            Integer from, Integer count, Integer profileId);
 
 }

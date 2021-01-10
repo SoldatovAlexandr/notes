@@ -1,9 +1,6 @@
 package net.thumbtack.school.notes.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,13 +19,18 @@ public class User {
     private boolean deleted;
     private UserType type;
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private LocalDateTime registered;
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<User> followers;
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<User> followings;
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<User> ignore;
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<User> ignoredBy;
 

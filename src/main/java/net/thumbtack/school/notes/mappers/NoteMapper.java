@@ -85,7 +85,7 @@ public interface NoteMapper {
                     @Result(property = "id", column = "id"),
                     @Result(property = "comments", column = "noteId=note_id, revisionId=id", javaType = List.class,
                             many = @Many(select = "net.thumbtack.school.notes.mappers.NoteMapper.getCommentViews",
-                                    fetchType = FetchType.LAZY))
+                                    fetchType = FetchType.EAGER))
             }
     )
     List<RevisionView> getRevisionViews(@Param("noteId") int id);

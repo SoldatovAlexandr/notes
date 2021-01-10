@@ -1,10 +1,7 @@
 package net.thumbtack.school.notes.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -12,6 +9,7 @@ import lombok.NoArgsConstructor;
 public class Section {
     private int id;
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private User author;
     private String name;
 

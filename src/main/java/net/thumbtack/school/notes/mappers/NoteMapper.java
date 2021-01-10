@@ -99,7 +99,7 @@ public interface NoteMapper {
 
     @Select("<script> " +
             "SELECT note.id AS id, note.user_id AS authorId, section_id AS sectionId, subject, " +
-            "note.created AS created, AVG(rating.number) AS rating , note_version.body AS body " +
+            "note.created AS created, AVG(rating.number) AS rating , ANY_VALUE(note_version.body) AS body " +
             "FROM note " +
             "LEFT JOIN note_version ON note.id = note_version.note_id " +
             "LEFT JOIN rating ON note.id = rating.note_id " +
